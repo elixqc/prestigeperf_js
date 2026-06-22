@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrestigePerf | Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="header"></div>
+
+<div class="pp-profile-section">
+    <div class="container">
+
+        <div class="row">
+            <!-- Avatar Column -->
+            <div class="col-md-3 mb-4">
+                <div class="pp-profile-avatar-wrap">
+                    <img id="profile-img"
+                        src="https://via.placeholder.com/150?text=No+Photo">
+                    <h6 id="profile-username"></h6>
+                    <small id="profile-role"></small>
+                </div>
+            </div>
+
+            <!-- Form Column -->
+            <div class="col-md-9">
+                <div class="pp-profile-card p-4">
+                    <form id="profileForm">
+
+                        <!-- Personal Info -->
+                        <span class="pp-profile-section-label">Personal Information</span>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Username</label>
+                                <input type="text" id="username" class="form-control" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Email</label>
+                                <input type="email" id="email" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Enter full name">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Contact Number</label>
+                                <input type="text" id="contact_number" name="contact_number" class="form-control" placeholder="Enter contact number">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Address</label>
+                                <input type="text" id="address" name="address" class="form-control" placeholder="Enter address">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Profile Picture</label>
+                            <input type="file" id="profile_picture" name="profile_picture" class="form-control-file" accept="image/*">
+                            <img id="picture-preview" src="" class="mt-2 rounded-circle" style="height:60px; width:60px; object-fit:cover; display:none;">
+                        </div>
+
+                        <hr class="pp-profile-divider">
+
+                        <!-- Change Password -->
+                        <span class="pp-profile-section-label">Change Password <span style="color:var(--text-muted); font-size:9px; letter-spacing:0.1em;">(leave blank to keep current)</span></span>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label>Current Password</label>
+                                <input type="password" id="current_password" name="current_password" class="form-control" placeholder="••••••">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>New Password</label>
+                                <input type="password" id="new_password" name="new_password" class="form-control" placeholder="••••••">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Confirm New Password</label>
+                                <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="••••••">
+                            </div>
+                        </div>
+
+                        <button type="button" id="btn-update" class="btn btn-primary btn-block">
+                            Update Profile
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/profile.js"></script>
+</body>
+</html>

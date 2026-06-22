@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrestigePerf | My Orders</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="header"></div>
+
+<div class="pp-orders-section">
+    <div class="container">
+
+        <p class="pp-orders-subtitle">Your History</p>
+        <h2 class="pp-orders-title">My Orders</h2>
+        <div class="pp-gold-rule mb-4" style="max-width:120px;"></div>
+
+        <!-- Filter Buttons -->
+        <div class="mb-4">
+            <button class="pp-filter-btn active" data-status="all">All</button>
+            <button class="pp-filter-btn" data-status="Pending">Pending</button>
+            <button class="pp-filter-btn" data-status="Processing">Processing</button>
+            <button class="pp-filter-btn" data-status="Out for Delivery">Out for Delivery</button>
+            <button class="pp-filter-btn" data-status="Completed">Completed</button>
+            <button class="pp-filter-btn" data-status="Cancelled">Cancelled</button>
+        </div>
+
+        <div id="orders-container"></div>
+
+    </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/my-orders.js"></script>
+</body>
+</html>

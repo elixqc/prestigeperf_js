@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrestigePerf | Register</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Brand at top -->
+<div class="pp-auth-brand">
+    <p class="pp-auth-brand-sub">MANILA</p>
+    <h2 class="pp-auth-brand-name">PRESTIGE PERFUMERY</h2>
+</div>
+
+<!-- Centered form -->
+<div class="pp-auth-wrapper">
+    <div class="pp-auth-box">
+
+        <h3 class="pp-auth-title">Create account</h3>
+        <p class="pp-auth-subtitle">Fill in your details to get started</p>
+
+        <form id="registerForm" novalidate onsubmit="return false;">
+
+            <!-- Username -->
+            <div class="pp-auth-input-wrap form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="username">
+            </div>
+
+            <!-- Full Name -->
+            <div class="pp-auth-input-wrap form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name" class="form-control" placeholder="full name">
+            </div>
+
+            <!-- Email -->
+            <div class="pp-auth-input-wrap form-group">
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" class="form-control" placeholder="your@email.com">
+            </div>
+
+            <!-- Contact Number -->
+            <div class="pp-auth-input-wrap form-group">
+                <label for="contact_number">Contact Number</label>
+                <input type="text" id="contact_number" name="contact_number" class="form-control" placeholder="your contact number">
+            </div>
+
+            <!-- Address -->
+            <div class="pp-auth-input-wrap form-group">
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" class="form-control" placeholder="your address">
+            </div>
+
+            <!-- Password -->
+            <div class="pp-auth-input-wrap form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••">
+                <button type="button" id="btn-toggle-pw" class="pp-auth-eye" tabindex="-1">
+                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12C3.75 7.5 7.5 4.5 12 4.5s8.25 3 9.75 7.5c-1.5 4.5-5.25 7.5-9.75 7.5S3.75 16.5 2.25 12z"/>
+                        <circle cx="12" cy="12" r="3" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="pp-auth-input-wrap form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="••••••••">
+                <button type="button" id="btn-toggle-cpw" class="pp-auth-eye" tabindex="-1">
+                    <svg id="eye-icon-confirm" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12C3.75 7.5 7.5 4.5 12 4.5s8.25 3 9.75 7.5c-1.5 4.5-5.25 7.5-9.75 7.5S3.75 16.5 2.25 12z"/>
+                        <circle cx="12" cy="12" r="3" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+
+            <button type="submit" id="btn-register" class="pp-auth-btn btn-block">Create Account →</button>
+
+        </form>
+
+        <p class="pp-auth-footer mt-3">
+            Already have an account? <a href="login.html">Sign in</a>
+        </p>
+
+    </div>
+
+    <div class="pp-auth-bottom">
+        <a href="home.html">Back to Shop</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/register.js"></script>
+</body>
+</html>

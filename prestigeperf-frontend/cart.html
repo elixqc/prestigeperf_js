@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrestigePerf | Cart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="header"></div>
+
+<div class="pp-cart-section">
+    <div class="container">
+
+        <p class="pp-cart-subtitle">Your Selection</p>
+        <h2 class="pp-cart-title">Shopping Cart</h2>
+        <div class="pp-gold-rule mb-5" style="max-width:120px;"></div>
+
+        <div id="guest-warning" class="alert" style="display:none; border:1px solid rgba(201,169,110,0.4); background:#faf9f7; color:var(--text-mid); border-radius:0;">
+            You are browsing as a guest. <a href="login.html" style="color:var(--primary);">Login</a> or <a href="register.html" style="color:var(--primary);">Register</a> to checkout.
+        </div>
+
+        <table class="pp-cart-table">
+            <thead>
+                <tr>
+                    <th style="width:100px;">Product</th>
+                    <th></th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="cart-body"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3"></td>
+                    <td>
+                        <p class="pp-cart-total-label mb-1">Total</p>
+                        <p class="pp-cart-total-amount mb-0" id="cart-total">₱0.00</p>
+                    </td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div id="checkout-section" style="display:none;">
+            <div class="pp-payment-section">
+                <p class="pp-payment-title">Payment Details</p>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <select id="payment_method" class="form-control">
+                                <!-- populated via JS -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4" id="reference-group" style="display:none;">
+                        <div class="form-group">
+                            <label>Payment Reference</label>
+                            <input type="text" id="payment_reference" class="form-control" placeholder="Enter reference number">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <button id="btn-checkout" class="pp-btn-checkout">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/cart.js"></script>
+</body>
+</html>

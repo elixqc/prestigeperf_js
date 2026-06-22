@@ -1,0 +1,78 @@
+<nav class="pp-nav" id="pp-nav">
+    <div class="pp-nav__veil" aria-hidden="true"></div>
+    <div class="pp-nav__inner">
+
+        <a class="pp-nav__brand" href="home.html">
+            <span class="pp-nav__seal" aria-hidden="true">
+                <svg width="38" height="38" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="sealGrad" cx="35%" cy="25%" r="80%">
+                            <stop offset="0%" stop-color="#3a1224"/>
+                            <stop offset="55%" stop-color="#1c0e15"/>
+                            <stop offset="100%" stop-color="#0c0509"/>
+                        </radialGradient>
+                    </defs>
+                    <path d="M20 3 C25.2 2.4 30.4 4.6 33.2 9.1 C36.4 13.8 35.8 20.6 32.8 25.1 C29.8 29.6 25.1 32.6 19.6 33 C14 33.5 8.4 30.9 5.4 25.9 C2.4 20.9 2.9 13.8 6.5 9.3 C9.5 5.3 14.6 3.6 20 3 Z"
+                          fill="url(#sealGrad)" stroke="#c9a96e" stroke-width="0.75"/>
+                    <circle cx="19.5" cy="18.5" r="12.5" fill="none" stroke="rgba(201,169,110,0.35)" stroke-width="0.5" stroke-dasharray="1.5 2"/>
+                    <path d="M17.5 11 L17.5 9.4 L21.5 9.4 L21.5 11" stroke="#c9a96e" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M17.5 11 C15.3 13.3 13.6 16.6 13.6 20.6 C13.6 24.8 16.2 27.9 19.5 28.4 C22.8 27.9 25.4 24.8 25.4 20.6 C25.4 16.6 23.7 13.3 21.5 11 Z"
+                          stroke="#c9a96e" stroke-width="1" fill="rgba(250,247,244,0.08)"/>
+                    <circle cx="19.5" cy="20.6" r="1.8" fill="#c9a96e"/>
+                    <circle cx="19.5" cy="20.6" r="0.8" fill="#faf7f4"/>
+                </svg>
+            </span>
+            <span class="pp-nav__brandtext">
+                <span class="pp-nav__name"><em>Prestige</em><b> Perfumery</b></span>
+                <span class="pp-nav__tagline">MANILA</span>
+            </span>
+        </a>
+
+        <button class="pp-nav__toggle" id="pp-nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="pp-nav-links">
+            <span></span><span></span>
+        </button>
+
+        <div class="pp-nav__links" id="pp-nav-links">
+            <ul class="pp-nav__list">
+                <li><a class="pp-nav__link" href="home.html"><span class="pp-nav__link-glow" aria-hidden="true"></span><span class="pp-nav__link-text">Home</span></a></li>
+                <li>
+                    <a class="pp-nav__link" href="cart.html">
+                        <span class="pp-nav__link-glow" aria-hidden="true"></span>
+                        <span class="pp-nav__link-text">Cart</span>
+                        <span id="cart-count" class="pp-nav__badge" style="display:none;"></span>
+                    </a>
+                </li>
+                <li id="nav-my-orders" style="display:none"><a class="pp-nav__link" href="my-orders.html"><span class="pp-nav__link-glow" aria-hidden="true"></span><span class="pp-nav__link-text">My Orders</span></a></li>
+                <li id="nav-dashboard" style="display:none"><a class="pp-nav__link" href="dashboard.html"><span class="pp-nav__link-glow" aria-hidden="true"></span><span class="pp-nav__link-text">Dashboard</span></a></li>
+                <li id="nav-profile" style="display:none"><a class="pp-nav__link" href="profile.html"><span class="pp-nav__link-glow" aria-hidden="true"></span><span class="pp-nav__link-text">Profile</span></a></li>
+                <li id="nav-login"><a class="pp-nav__link pp-nav__link--cta" href="login.html">Login</a></li>
+                <li id="nav-logout" style="display:none">
+                    <a class="pp-nav__link pp-nav__link--ghost" href="#" id="btn-logout">
+                        <span class="pp-nav__link-glow" aria-hidden="true"></span>
+                        <span class="pp-nav__link-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <div class="pp-nav__diffusion" aria-hidden="true"></div>
+</nav>
+
+<script>
+(function () {
+    var nav = document.getElementById('pp-nav');
+    var toggle = document.getElementById('pp-nav-toggle');
+    var links = document.getElementById('pp-nav-links');
+
+    toggle.addEventListener('click', function () {
+        var open = links.classList.toggle('is-open');
+        toggle.classList.toggle('is-open', open);
+        toggle.setAttribute('aria-expanded', open);
+    });
+
+    window.addEventListener('scroll', function () {
+        nav.classList.toggle('is-scrolled', window.scrollY > 10);
+    }, { passive: true });
+})();
+</script>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrestigePerf | Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body style="display:none;">
+
+<div class="d-flex">
+    <div id="sidebar"></div>
+
+    <div class="pp-main flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 style="color: var(--primary); font-family: var(--font-display); font-weight:300; margin:0;">
+                    Dashboard Overview
+                </h4>
+                <small style="color: var(--text-muted); letter-spacing:0.1em;">Welcome back, Admin</small>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary btn-period active" data-period="all">All Time</button>
+                <button class="btn btn-sm btn-outline-secondary btn-period" data-period="year">This Year</button>
+                <button class="btn btn-sm btn-outline-secondary btn-period" data-period="month">This Month</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="pp-stat" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">
+                    <h6>Total Products</h6>
+                    <h2 id="total-products">0</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="pp-stat" style="background: linear-gradient(135deg, #2d2d2d, #1a1a1a);">
+                    <h6>Total Orders</h6>
+                    <h2 id="total-orders">0</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="pp-stat" style="background: linear-gradient(135deg, var(--gold), #b8933a);">
+                    <h6>Total Users</h6>
+                    <h2 id="total-users">0</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="pp-stat" style="background: linear-gradient(135deg, #5a3d4a, #3d2030);">
+                    <h6>Total Categories</h6>
+                    <h2 id="total-categories">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card p-3">
+                    <h6 style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted);">
+                        Stock per Product
+                    </h6>
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card p-3">
+                    <h6 style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted);">
+                        Orders Over Time
+                    </h6>
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card p-3">
+                    <h6 style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted);">
+                        Top 5 Selling Products
+                    </h6>
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
