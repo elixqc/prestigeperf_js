@@ -1,5 +1,5 @@
 const { Order, OrderDetail, Product, User, Cart } = require('../models');
-const { transporter, generateReceiptPDF } = require('../utils/mailer');
+const { sendOrderStatusEmail } = require('../utils/mailer');
 
 exports.getAllOrders = async (req, res) => {
     try {
@@ -81,7 +81,7 @@ exports.createOrder = async (req, res) => {
         await Cart.destroy({ where: { user_id }, transaction: t });
         await t.commit();
 
-        // Send email OUTSIDE transaction
+        // Send confirmation email OUTSIDE transaction
         try {
             const fullOrder = await Order.findByPk(order.order_id, {
                 include: [
@@ -90,28 +90,8 @@ exports.createOrder = async (req, res) => {
             });
 
             const user = await User.findByPk(user_id);
-            const pdfBuffer = await generateReceiptPDF(fullOrder, user);
-
-            await transporter.sendMail({
-                from: '"PrestigePerf" <noreply@prestigeperf.com>',
-                to: user.email,
-                subject: `Order #${order.order_id} Confirmation - PrestigePerf`,
-                html: `
-                    <h2>Thank you for your order, ${user.username}!</h2>
-                    <p>Your order <strong>#${order.order_id}</strong> has been placed successfully.</p>
-                    <p><strong>Payment Method:</strong> ${order.payment_method}</p>
-                    ${order.payment_reference ? `<p><strong>Reference:</strong> ${order.payment_reference}</p>` : ''}
-                    <p>Please find your receipt attached.</p>
-                    <br>
-                    <p>— PrestigePerf Team</p>
-                `,
-                attachments: [
-                    {
-                        filename: `receipt-order-${order.order_id}.pdf`,
-                        content: pdfBuffer,
-                        contentType: 'application/pdf'
-                    }
-                ]
+            await sendOrderStatusEmail(fullOrder, user, {
+                subject: `Order #${order.order_id} Confirmed – Prestige Perfumery`
             });
         } catch (mailErr) {
             console.error('Email sending failed:', mailErr.message);
@@ -151,7 +131,9 @@ exports.updateOrderStatus = async (req, res) => {
             { where: { order_id: req.params.id }, transaction: t }
         );
 
-        // Send email OUTSIDE transaction
+        await t.commit();
+
+        // Fetch AFTER commit so the status is the updated one
         try {
             const fullOrder = await Order.findByPk(req.params.id, {
                 include: [
@@ -160,33 +142,11 @@ exports.updateOrderStatus = async (req, res) => {
                 ]
             });
 
-            const pdfBuffer = await generateReceiptPDF(fullOrder, fullOrder.User);
-
-            await transporter.sendMail({
-                from: '"PrestigePerf" <noreply@prestigeperf.com>',
-                to: fullOrder.User.email,
-                subject: `Order #${fullOrder.order_id} Status Update - PrestigePerf`,
-                html: `
-                    <h2>Order Status Update</h2>
-                    <p>Hi ${fullOrder.User.username},</p>
-                    <p>Your order <strong>#${fullOrder.order_id}</strong> status has been updated to: <strong>${order_status}</strong></p>
-                    <p>Please find your updated receipt attached.</p>
-                    <br>
-                    <p>— PrestigePerf Team</p>
-                `,
-                attachments: [
-                    {
-                        filename: `receipt-order-${fullOrder.order_id}.pdf`,
-                        content: pdfBuffer,
-                        contentType: 'application/pdf'
-                    }
-                ]
-            });
+            await sendOrderStatusEmail(fullOrder, fullOrder.User);
         } catch (mailErr) {
             console.error('Email sending failed:', mailErr.message);
         }
 
-        await t.commit();
         res.json({ success: true, message: 'Order status updated and email sent' });
     } catch (err) {
         try { await t.rollback(); } catch (rbErr) { console.error('Rollback error:', rbErr.message); }
@@ -197,7 +157,6 @@ exports.updateOrderStatus = async (req, res) => {
 exports.deleteOrder = async (req, res) => {
     const t = await Order.sequelize.transaction();
     try {
-        // Add this before destroying
         const details = await OrderDetail.findAll({
             where: { order_id: req.params.id },
             transaction: t
