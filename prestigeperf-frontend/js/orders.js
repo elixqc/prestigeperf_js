@@ -32,8 +32,9 @@ $(document).ready(function () {
     $('body').show();
 
     let table;
+    let ordersById = {}; // cache so the detail modal doesn't need a second AJAX call
 
-    // ← Sidebar load — DITO LANG, ONCE, sa taas
+    // Sidebar load — DITO LANG, ONCE, sa taas
     $.get("sidebar.html?v=" + new Date().getTime(), function (data) {
         $("#sidebar").html(data);
         const page = window.location.pathname.split('/').pop().replace('.html', '');
@@ -69,6 +70,18 @@ $(document).ready(function () {
         }
     });
 
+    // maps order_status -> pp-pill class + label used across table row + detail modal
+    function statusPillHtml(status) {
+        const cls = {
+            'Pending': 'pp-pill-pending',
+            'Processing': 'pp-pill-processing',
+            'Out for Delivery': 'pp-pill-delivery',
+            'Completed': 'pp-pill-completed',
+            'Cancelled': 'pp-pill-cancelled'
+        }[status] || 'pp-pill-pending';
+        return `<span class="pp-pill ${cls}">${status}</span>`;
+    }
+
     // Load orders
     function loadOrders() {
         $.ajax({
@@ -77,40 +90,33 @@ $(document).ready(function () {
             headers: { Authorization: `Bearer ${token}` },
             success: function (data) {
                 const rows = [];
+                ordersById = {};
 
                 $.each(data.orders, function (i, order) {
-                    const statusBadge = {
-                        'Pending': 'warning',
-                        'Processing': 'info',
-                        'Out for Delivery': 'primary',
-                        'Completed': 'success',
-                        'Cancelled': 'danger'
-                    }[order.order_status] || 'secondary';
-
                     let total = 0;
-                    let itemsList = '';
+                    let itemsSummary = '';
                     $.each(order.OrderDetails, function (j, detail) {
                         total += detail.quantity * parseFloat(detail.price);
-                        itemsList += `${detail.Product?.product_name ?? 'N/A'} (x${detail.quantity})<br>`;
+                        itemsSummary += `${detail.Product?.product_name ?? 'N/A'} <span class="pp-row-subtext">×${detail.quantity}</span><br>`;
                     });
+
+                    order._computedTotal = total;
+                    ordersById[order.order_id] = order;
 
                     rows.push([
                         order.order_id,
-                        `${order.User?.username ?? 'N/A'}<br>
-                        <small>${order.User?.email ?? ''}</small><br>
-                        <small>${order.User?.contact_number ?? '—'}</small>`,
-                        `<small>${order.User?.address ?? '—'}</small>`,
-                        itemsList,
+                        `<div class="pp-row-title">${order.User?.username ?? 'N/A'}</div>
+                         <div class="pp-row-subtext">${order.User?.email ?? ''}</div>`,
+                        itemsSummary,
                         `₱${total.toFixed(2)}`,
-                        order.payment_method ?? '—',
-                        order.payment_reference ?? '—',
-                        `<span class="badge badge-${statusBadge}">${order.order_status}</span>`,
+                        statusPillHtml(order.order_status),
                         new Date(order.order_date ?? order.createdAt).toLocaleDateString(),
-                        `<button class="btn btn-sm btn-warning btn-update-status"
-                            data-id="${order.order_id}"
-                            data-status="${order.order_status}">Update</button>
-                        <button class="btn btn-sm btn-danger btn-delete-order"
-                            data-id="${order.order_id}">Delete</button>`
+                        `<div class="pp-row-actions">
+                             <button class="pp-btn-icon btn-view-order" title="View details" data-id="${order.order_id}"><i class="fas fa-eye"></i></button>
+                             <button class="pp-btn-icon edit btn-update-status" title="Update status"
+                                data-id="${order.order_id}" data-status="${order.order_status}"><i class="fas fa-rotate"></i></button>
+                             <button class="pp-btn-icon delete btn-delete-order" title="Delete" data-id="${order.order_id}"><i class="fas fa-trash"></i></button>
+                         </div>`
                     ]);
                 });
 
@@ -124,14 +130,11 @@ $(document).ready(function () {
                         columns: [
                             { title: "#" },
                             { title: "Customer" },
-                            { title: "Address" },
                             { title: "Items" },
                             { title: "Total" },
-                            { title: "Payment" },
-                            { title: "Reference" },
                             { title: "Status" },
                             { title: "Date" },
-                            { title: "Actions" }
+                            { title: "Actions", orderable: false }
                         ]
                     });
                 }
@@ -141,8 +144,58 @@ $(document).ready(function () {
 
     loadOrders();
 
+    // Fill and open the order detail modal
+    function showOrderDetail(id) {
+        const order = ordersById[id];
+        if (!order) return;
+
+        $('#detail-order-id').text('#' + order.order_id);
+        $('#detail-customer-name').text(order.User?.username ?? 'N/A');
+        $('#detail-customer-email').text(order.User?.email ?? '—');
+        $('#detail-customer-contact').text(order.User?.contact_number ?? '—');
+        $('#detail-customer-address').text(order.User?.address ?? '—');
+        $('#detail-payment-method').text(order.payment_method ?? '—');
+        $('#detail-payment-reference').text(order.payment_reference ?? '—');
+        $('#detail-status-pill').html(statusPillHtml(order.order_status));
+        $('#detail-order-date').text(new Date(order.order_date ?? order.createdAt).toLocaleString());
+
+        const $body = $('#detail-items-body').empty();
+        $.each(order.OrderDetails, function (i, detail) {
+            const price = parseFloat(detail.price);
+            const subtotal = price * detail.quantity;
+            $body.append(`
+                <tr>
+                    <td class="pp-detail-item-name">${detail.Product?.product_name ?? 'N/A'}</td>
+                    <td>${detail.quantity}</td>
+                    <td>₱${price.toFixed(2)}</td>
+                    <td>₱${subtotal.toFixed(2)}</td>
+                </tr>
+            `);
+        });
+
+        $('#detail-grand-total').text('₱' + order._computedTotal.toFixed(2));
+        $('#orderDetailModal').modal('show');
+    }
+
+    // View button opens detail modal
+    $(document).on('click', '.btn-view-order', function (e) {
+        e.stopPropagation();
+        showOrderDetail($(this).data('id'));
+    });
+
+    // Clicking anywhere on the row (except actions) also opens detail modal
+    $(document).on('click', '#orders-table tbody tr', function (e) {
+        if ($(e.target).closest('.pp-row-actions').length) return;
+        const rowData = table.row(this).data();
+        if (rowData) showOrderDetail(rowData[0]);
+    });
+    $(document).on('mouseenter', '#orders-table tbody tr', function () {
+        $(this).css('cursor', 'pointer');
+    });
+
     // Open update status modal
-    $(document).on('click', '.btn-update-status', function () {
+    $(document).on('click', '.btn-update-status', function (e) {
+        e.stopPropagation();
         const id = $(this).data('id');
         const currentStatus = $(this).data('status');
         $('#update-order-id').val(id);
@@ -185,7 +238,8 @@ $(document).ready(function () {
     });
 
     // Delete order
-    $(document).on('click', '.btn-delete-order', function () {
+    $(document).on('click', '.btn-delete-order', function (e) {
+        e.stopPropagation();
         const id = $(this).data('id');
         Swal.fire({
             title: 'Are you sure?',
@@ -213,6 +267,6 @@ $(document).ready(function () {
                 });
             }
         });
-    }); // ← closing ng delete handler
+    });
 
-}); // ← closing ng document.ready
+});

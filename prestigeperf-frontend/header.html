@@ -72,7 +72,9 @@
     });
 
     window.addEventListener('scroll', function () {
-        nav.classList.toggle('is-scrolled', window.scrollY > 10);
+        var shopSection = document.getElementById('shop');
+        var threshold = shopSection ? shopSection.offsetTop - nav.offsetHeight : 10;
+        nav.classList.toggle('is-scrolled', window.scrollY > threshold);
     }, { passive: true });
 })();
 </script>

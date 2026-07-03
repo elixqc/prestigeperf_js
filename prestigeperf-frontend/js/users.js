@@ -68,31 +68,33 @@ $(document).ready(function () {
                 const rows = [];
 
                 $.each(data.users, function (i, u) {
-                    const statusBadge = u.is_active
-                        ? `<span class="badge badge-success">Active</span>`
-                        : `<span class="badge badge-secondary">Inactive</span>`;
+                    const statusPill = u.is_active
+                        ? `<span class="pp-pill pp-pill-active">Active</span>`
+                        : `<span class="pp-pill pp-pill-inactive">Inactive</span>`;
 
-                    const roleBadge = u.role === 'admin'
-                        ? `<span class="badge badge-danger">Admin</span>`
-                        : `<span class="badge badge-info">Customer</span>`;
+                    const rolePill = u.role === 'admin'
+                        ? `<span class="pp-pill pp-pill-completed">Admin</span>`
+                        : `<span class="pp-pill pp-pill-processing">Customer</span>`;
 
                     const actions = `
-                        <button class="btn btn-sm btn-warning btn-edit-role"
-                            data-id="${u.user_id}"
-                            data-username="${u.username}"
-                            data-email="${u.email}"
-                            data-role="${u.role}">Edit Role</button>
-                        ${u.is_active
-                            ? `<button class="btn btn-sm btn-danger btn-deactivate" data-id="${u.user_id}">Deactivate</button>`
-                            : `<button class="btn btn-sm btn-success btn-activate" data-id="${u.user_id}">Activate</button>`}
+                        <div class="pp-row-actions">
+                            <button class="pp-btn-icon edit btn-edit-role" title="Edit role"
+                                data-id="${u.user_id}"
+                                data-username="${u.username}"
+                                data-email="${u.email}"
+                                data-role="${u.role}"><i class="fas fa-user-pen"></i></button>
+                            ${u.is_active
+                                ? `<button class="pp-btn-icon delete btn-deactivate" title="Deactivate" data-id="${u.user_id}"><i class="fas fa-user-slash"></i></button>`
+                                : `<button class="pp-btn-icon btn-activate" title="Activate" data-id="${u.user_id}"><i class="fas fa-user-check"></i></button>`}
+                        </div>
                     `;
 
                     rows.push([
                         i + 1,
-                        u.username,
+                        `<div class="pp-row-title">${u.username}</div>`,
                         u.email,
-                        roleBadge,
-                        statusBadge,
+                        rolePill,
+                        statusPill,
                         actions
                     ]);
                 });
@@ -110,7 +112,7 @@ $(document).ready(function () {
                             { title: "Email" },
                             { title: "Role" },
                             { title: "Status" },
-                            { title: "Actions" }
+                            { title: "Actions", orderable: false }
                         ]
                     });
                 }

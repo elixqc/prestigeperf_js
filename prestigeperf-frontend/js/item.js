@@ -187,20 +187,29 @@ $(document).ready(function () {
                         : 'https://via.placeholder.com/50?text=N/A';
 
                     const actions = showingInactive
-                        ? `<button class="btn btn-sm btn-success btn-restore" data-id="${p.product_id}">Restore</button>`
-                        : `<button class="btn btn-sm btn-warning btn-edit" data-id="${p.product_id}">Edit</button>
-                           <button class="btn btn-sm btn-danger btn-delete" data-id="${p.product_id}">Delete</button>`;
+                        ? `<div class="pp-row-actions">
+                               <button class="pp-btn-icon btn-restore" title="Restore" data-id="${p.product_id}"><i class="fas fa-undo"></i></button>
+                           </div>`
+                        : `<div class="pp-row-actions">
+                               <button class="pp-btn-icon edit btn-edit" title="Edit" data-id="${p.product_id}"><i class="fas fa-pen"></i></button>
+                               <button class="pp-btn-icon delete btn-delete" title="Delete" data-id="${p.product_id}"><i class="fas fa-trash"></i></button>
+                           </div>`;
+
+                    const stockPill = p.stock_quantity > 0
+                        ? (p.stock_quantity <= 5
+                            ? `<span class="pp-pill pp-pill-lowstock">${p.stock_quantity} left</span>`
+                            : `<span class="pp-pill pp-pill-instock">${p.stock_quantity} in stock</span>`)
+                        : `<span class="pp-pill pp-pill-outstock">Out of stock</span>`;
 
                     rows.push([
                         i + 1,
-                        `<img src="${imgSrc}" style="height:50px; width:50px; object-fit:cover; border-radius:4px;">`,
-                        p.product_name,
+                        `<img src="${imgSrc}" class="pp-row-thumb">`,
+                        `<div class="pp-row-title">${p.product_name}</div>${p.variant ? `<div class="pp-row-subtext">${p.variant}</div>` : ''}`,
                         p.Category?.category_name ?? 'N/A',
                         p.Supplier?.supplier_name ?? 'N/A',
                         `₱${p.initial_price}`,
                         `₱${p.selling_price}`,
-                        p.stock_quantity,
-                        p.variant ?? '',
+                        stockPill,
                         actions
                     ]);
                 });
@@ -215,8 +224,8 @@ $(document).ready(function () {
                         columns: [
                             { title: "#" }, { title: "Image" }, { title: "Product Name" },
                             { title: "Category" }, { title: "Supplier" }, { title: "Cost Price" },
-                            { title: "Sell Price" }, { title: "Stock" }, { title: "Variant" },
-                            { title: "Actions" }
+                            { title: "Sell Price" }, { title: "Stock" },
+                            { title: "Actions", orderable: false }
                         ]
                     });
                 }

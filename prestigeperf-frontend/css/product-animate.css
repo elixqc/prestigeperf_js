@@ -1,0 +1,38 @@
+/* ============================================================
+   PrestigePerf — product-animate.css
+   Companion stylesheet for GSAP-driven motion on product.html.
+   Keeps animation-only concerns (initial states, will-change,
+   transform origins) out of the main style.css.
+   ============================================================ */
+
+/* Prevents a flash of fully-visible content before GSAP's
+   entrance timeline runs on page load. GSAP sets the real
+   from-state via JS, but this stops a 1-frame flicker. */
+#product-detail .pp-main-img-wrap,
+#product-detail .thumbnail-img,
+#product-detail .pp-product-info > * {
+    opacity: 0;
+}
+
+/* Recommended cards start hidden; ScrollTrigger reveals them
+   in staggered batches as the section scrolls into view. */
+#recommended-items .pp-product-card {
+    opacity: 0;
+}
+
+/* Smoother GPU-accelerated transforms for elements GSAP animates */
+.pp-main-img-wrap img,
+#main-img,
+.thumbnail-img,
+#recommended-items .pp-product-card,
+.pp-btn-addcart,
+.qty-btn {
+    will-change: transform, opacity;
+    transform-origin: center center;
+}
+
+/* Add-to-cart button gets its own transform origin so the
+   click "pulse" scales evenly rather than skewing from an edge */
+.pp-btn-addcart {
+    display: inline-block;
+}

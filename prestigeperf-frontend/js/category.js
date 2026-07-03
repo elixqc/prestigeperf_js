@@ -88,12 +88,14 @@ $(document).ready(function () {
                 $.each(data.categories, function (i, c) {
                     rows.push([
                         i + 1,
-                        c.category_name,
-                        `<button class="btn btn-sm btn-warning btn-edit"
-                            data-id="${c.category_id}"
-                            data-name="${c.category_name}">Edit</button>
-                         <button class="btn btn-sm btn-danger btn-delete"
-                            data-id="${c.category_id}">Delete</button>`
+                        `<div class="pp-row-title">${c.category_name}</div>`,
+                        `<div class="pp-row-actions">
+                             <button class="pp-btn-icon edit btn-edit" title="Edit"
+                                data-id="${c.category_id}"
+                                data-name="${c.category_name}"><i class="fas fa-pen"></i></button>
+                             <button class="pp-btn-icon delete btn-delete" title="Delete"
+                                data-id="${c.category_id}"><i class="fas fa-trash"></i></button>
+                         </div>`
                     ]);
                 });
 
@@ -107,7 +109,7 @@ $(document).ready(function () {
                         columns: [
                             { title: "#" },
                             { title: "Category Name" },
-                            { title: "Actions" }
+                            { title: "Actions", orderable: false }
                         ]
                     });
                 }

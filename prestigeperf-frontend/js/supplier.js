@@ -117,18 +117,20 @@ $(document).ready(function () {
                 $.each(data.suppliers, function (i, s) {
                     rows.push([
                         i + 1,
-                        s.supplier_name,
+                        `<div class="pp-row-title">${s.supplier_name}</div>`,
                         s.contact_person ?? '—',
                         s.contact_number ?? '—',
                         s.address ?? '—',
-                        `<button class="btn btn-sm btn-warning btn-edit"
-                            data-id="${s.supplier_id}"
-                            data-name="${s.supplier_name}"
-                            data-person="${s.contact_person ?? ''}"
-                            data-number="${s.contact_number ?? ''}"
-                            data-address="${s.address ?? ''}">Edit</button>
-                         <button class="btn btn-sm btn-danger btn-delete"
-                            data-id="${s.supplier_id}">Delete</button>`
+                        `<div class="pp-row-actions">
+                             <button class="pp-btn-icon edit btn-edit" title="Edit"
+                                data-id="${s.supplier_id}"
+                                data-name="${s.supplier_name}"
+                                data-person="${s.contact_person ?? ''}"
+                                data-number="${s.contact_number ?? ''}"
+                                data-address="${s.address ?? ''}"><i class="fas fa-pen"></i></button>
+                             <button class="pp-btn-icon delete btn-delete" title="Delete"
+                                data-id="${s.supplier_id}"><i class="fas fa-trash"></i></button>
+                         </div>`
                     ]);
                 });
 
@@ -145,7 +147,7 @@ $(document).ready(function () {
                             { title: "Contact Person" },
                             { title: "Contact Number" },
                             { title: "Address" },
-                            { title: "Actions" }
+                            { title: "Actions", orderable: false }
                         ]
                     });
                 }

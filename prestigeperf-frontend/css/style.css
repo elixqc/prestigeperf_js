@@ -1863,12 +1863,20 @@ body {
     background: #ffffff;
 }
 
-.pp-recommended-label {
+.pp-recommended-subtitle {
     font-size: 10px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--gold);
+    margin-bottom: 8px;
+}
+
+.pp-recommended-title {
+    font-size: 3rem;
+    font-weight: 700;
     margin-bottom: 32px;
+    text-transform: none;
+    color: var(--text-dark);
 }
 
 /* ─── Footer ──────────────────────────────────────────────── */

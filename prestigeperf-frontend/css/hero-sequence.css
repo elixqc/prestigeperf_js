@@ -1,0 +1,85 @@
+/* ─── Hero Image Sequence ────────────────────────────────────────────── */
+
+.pp-hero {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#image-sequence {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: block;
+}
+
+.pp-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.55) 100%);
+    pointer-events: none;
+}
+
+.pp-hero-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 24px;
+    color: #faf7f4;
+}
+
+.pp-hero-eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.85;
+    /* GSAP initial state */
+    transform: translateY(20px);
+    opacity: 0;
+}
+
+.pp-hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: clamp(48px, 8vw, 96px);
+    letter-spacing: 0.04em;
+    margin-bottom: 20px;
+    line-height: 1.05;
+    /* GSAP initial state */
+    transform: translateY(40px);
+    opacity: 0;
+}
+
+.pp-hero-sub {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    letter-spacing: 0.03em;
+    max-width: 480px;
+    margin-bottom: 36px;
+    opacity: 0;
+    /* GSAP initial state */
+    transform: translateY(30px);
+}
+
+.pp-hero-cta {
+    position: relative;
+    z-index: 1;
+    /* GSAP initial state */
+    transform: translateY(30px);
+    opacity: 0;
+}
