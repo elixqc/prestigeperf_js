@@ -1,28 +1,88 @@
-const { Product, Category, Supplier,ProductImage } = require('../models');
-const { Op } = require('sequelize');
+const { Product, Category, Supplier, ProductImage, Order, OrderDetail } = require('../models');
+const { Op, fn, col } = require('sequelize');
 
 exports.getAllProducts = async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 8;
         const offset = parseInt(req.query.offset) || 0;
         const search = req.query.search || '';
+        const minPrice = req.query.min_price !== undefined ? parseFloat(req.query.min_price) : null;
+        const maxPrice = req.query.max_price !== undefined ? parseFloat(req.query.max_price) : null;
+        const categoryId = req.query.category_id || ''; // comma-separated ids, e.g. "1,3,5"
+        const sort = req.query.sort || '';
 
         const whereClause = {
             is_active: 1,
             ...(search && {
                 product_name: { [Op.like]: `%${search}%` }
+            }),
+            ...((minPrice !== null || maxPrice !== null) && {
+                selling_price: {
+                    ...(minPrice !== null && !isNaN(minPrice) && { [Op.gte]: minPrice }),
+                    ...(maxPrice !== null && !isNaN(maxPrice) && { [Op.lte]: maxPrice })
+                }
+            }),
+            ...(categoryId && {
+                category_id: categoryId.includes(',')
+                    ? { [Op.in]: categoryId.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) }
+                    : parseInt(categoryId)
             })
         };
 
+        const includeOpts = [
+            { model: Category, attributes: ['category_name'] },
+            { model: Supplier, attributes: ['supplier_name'] },
+            { model: ProductImage, attributes: ['image_id', 'image_path'] }
+        ];
+
+        if (sort === 'best_selling') {
+            // 1. Aggregate quantity sold per product (Completed orders only) as its
+            //    own isolated query — no joins to Category/Supplier/ProductImage here,
+            //    so there's no fan-out risk from those hasMany relations skewing SUM().
+            const soldRows = await OrderDetail.findAll({
+                attributes: [
+                    'product_id',
+                    [fn('SUM', col('OrderDetail.quantity')), 'sold_count']
+                ],
+                include: [{
+                    model: Order,
+                    attributes: [],
+                    where: { order_status: 'Completed' },
+                    required: true
+                }],
+                group: ['OrderDetail.product_id'],
+                raw: true
+            });
+
+            const soldMap = new Map(soldRows.map(r => [r.product_id, parseInt(r.sold_count, 10)]));
+
+            // 2. Fetch every product matching the filters (no limit/offset yet) —
+            //    Category/Supplier/ProductImage are safe to include here since
+            //    there's no aggregate/group in this query to be thrown off by them.
+            const allProducts = await Product.findAll({
+                where: whereClause,
+                include: includeOpts,
+                distinct: true
+            });
+
+            // 3. Attach sold_count, sort by it, then paginate in memory.
+            const withCounts = allProducts
+                .map(p => ({ product: p, sold_count: soldMap.get(p.product_id) || 0 }))
+                .sort((a, b) => b.sold_count - a.sold_count);
+
+            const total = withCounts.length;
+            const pageSlice = withCounts.slice(offset, offset + limit).map(x => x.product);
+
+            return res.json({ success: true, products: pageSlice, total, hasMore: offset + limit < total });
+        }
+
+        // Default (non best-selling) path — normal Sequelize pagination.
         const { count, rows: products } = await Product.findAndCountAll({
             where: whereClause,
-            include: [
-                { model: Category, attributes: ['category_name'] },
-                { model: Supplier, attributes: ['supplier_name'] },
-                { model: ProductImage, attributes: ['image_id', 'image_path'] }
-            ],
+            include: includeOpts,
             limit,
-            offset
+            offset,
+            distinct: true
         });
 
         res.json({ success: true, products, total: count, hasMore: offset + limit < count });

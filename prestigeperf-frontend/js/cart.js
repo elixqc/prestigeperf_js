@@ -260,11 +260,14 @@ $(document).ready(function () {
     });
 
     // Checkout
+    // Store fetched cart temporarily for confirm step
+    let pendingOrderData = null;
+
+    // Checkout — Step 1: fetch cart, show confirmation modal
     $('#btn-checkout').on('click', function () {
         const payment_method = $('#payment_method').val();
         const payment_reference = $('#payment_reference').val();
 
-        // Get cart items from DB first
         $.ajax({
             method: 'GET',
             url: `${url}api/v1/cart`,
@@ -275,40 +278,99 @@ $(document).ready(function () {
                     return;
                 }
 
-                const items = data.cart.map(item => ({
-                    product_id: item.product_id,
-                    quantity: item.quantity
-                }));
+                // Build modal item list + total
+                // Build modal item list + total
+                let total = 0;
+                let itemsHtml = '';
+                $.each(data.cart, function (i, item) {
+                    const price = parseFloat(item.Product.selling_price);
+                    const subtotal = price * item.quantity;
+                    total += subtotal;
 
-                // Place order
+                    const imgSrc = (item.Product.ProductImages && item.Product.ProductImages.length > 0)
+                        ? `${url}images/${item.Product.ProductImages[0].image_path}`
+                        : 'https://via.placeholder.com/60?text=N/A';
+
+                    itemsHtml += `
+                        <div class="d-flex justify-content-between align-items-center pp-modal-item">
+                            <div class="d-flex align-items-center" style="gap:14px;">
+                                <img src="${imgSrc}" class="pp-modal-item-img" alt="${item.Product.product_name}">
+                                <div>
+                                    <p class="pp-modal-item-name mb-0">${item.Product.product_name}</p>
+                                    <p class="pp-modal-item-qty mb-0">Qty: ${item.quantity} × ₱${price.toFixed(2)}</p>
+                                </div>
+                            </div>
+                            <span class="pp-modal-item-subtotal">₱${subtotal.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+
+                $('#modal-order-items').html(itemsHtml);
+                $('#modal-order-total').text(`₱${total.toFixed(2)}`);
+                $('#modal-payment-method').text(payment_method);
+
+                if (payment_method !== 'COD' && payment_reference) {
+                    $('#modal-payment-reference').text(payment_reference);
+                    $('#modal-reference-row').show();
+                } else {
+                    $('#modal-reference-row').hide();
+                }
+
+                // Save for the confirm step
+                pendingOrderData = {
+                    items: data.cart.map(item => ({
+                        product_id: item.product_id,
+                        quantity: item.quantity
+                    })),
+                    payment_method,
+                    payment_reference
+                };
+
+                $('#orderConfirmModal').modal('show');
+            },
+            error: function () {
+                Swal.fire({ icon: 'error', text: 'Failed to load cart!', position: 'bottom-right', showConfirmButton: false, timer: 1500 });
+            }
+        });
+    });
+
+    // Checkout — Step 2: actually place the order after confirming in modal
+    $('#btn-confirm-order').on('click', function () {
+        if (!pendingOrderData) return;
+
+        const $btn = $(this);
+        $btn.prop('disabled', true).text('Placing Order...');
+
+        $.ajax({
+            method: 'POST',
+            url: `${url}api/v1/orders`,
+            contentType: 'application/json',
+            data: JSON.stringify(pendingOrderData),
+            headers: { Authorization: `Bearer ${token}` },
+            success: function (orderData) {
                 $.ajax({
-                    method: 'POST',
-                    url: `${url}api/v1/orders`,
-                    contentType: 'application/json',
-                    data: JSON.stringify({ items, payment_method, payment_reference }),
+                    method: 'DELETE',
+                    url: `${url}api/v1/cart`,
                     headers: { Authorization: `Bearer ${token}` },
-                    success: function (orderData) {
-                        // Clear cart after order
-                        $.ajax({
-                            method: 'DELETE',
-                            url: `${url}api/v1/cart`,
-                            headers: { Authorization: `Bearer ${token}` },
-                            success: function () {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Order Placed!',
-                                    text: `Order #${orderData.order.order_id} placed successfully!`,
-                                    confirmButtonColor: '#8b1a4a'
-                                }).then(() => {
-                                    window.location.href = 'my-orders.html';
-                                });
-                            }
+                    success: function () {
+                        $('#orderConfirmModal').modal('hide');
+                        $btn.prop('disabled', false).text('Confirm Order');
+                        pendingOrderData = null;
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Order Placed!',
+                            text: `Order #${orderData.order.order_id} placed successfully!`,
+                            confirmButtonColor: '#8b1a4a'
+                        }).then(() => {
+                            window.location.href = 'my-orders.html';
                         });
-                    },
-                    error: function (err) {
-                        Swal.fire({ icon: 'error', text: err.responseJSON?.message || 'Checkout failed!', position: 'bottom-right', showConfirmButton: false, timer: 1500 });
                     }
                 });
+            },
+            error: function (err) {
+                $btn.prop('disabled', false).text('Confirm Order');
+                Swal.fire({ icon: 'error', text: err.responseJSON?.message || 'Checkout failed!', position: 'bottom-right', showConfirmButton: false, timer: 1500 });
             }
         });
     });

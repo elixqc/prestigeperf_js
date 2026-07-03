@@ -34,7 +34,29 @@
 
         <div class="pp-nav__links" id="pp-nav-links">
             <ul class="pp-nav__list">
+                <!-- Search: icon + anchored dropdown, sits as a nav item -->
+                <li class="pp-nav__search-item">
+                    <button class="pp-nav__search-toggle" id="pp-nav-search-toggle" aria-label="Search" aria-expanded="false">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                            <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+
+                    <div class="pp-nav__search" id="pp-nav-search">
+                        <div class="pp-nav__search-box">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                                <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <input type="text" id="header-search-input" placeholder="Search fragrances..." autocomplete="off">
+                        </div>
+                        <ul id="header-autocomplete-list" class="list-group"></ul>
+                    </div>
+                </li>
+
                 <li><a class="pp-nav__link" href="home.html"><span class="pp-nav__link-glow" aria-hidden="true"></span><span class="pp-nav__link-text">Home</span></a></li>
+
                 <li>
                     <a class="pp-nav__link" href="cart.html">
                         <span class="pp-nav__link-glow" aria-hidden="true"></span>
@@ -71,10 +93,28 @@
         toggle.setAttribute('aria-expanded', open);
     });
 
+    var shopSection = document.getElementById('shop');
+
+    // Kung walang hero/#shop sa page, solid dapat agad yung nav — hindi umaasa sa scroll
+    if (!shopSection) {
+        nav.classList.add('is-scrolled');
+        return; // no need mag-attach ng scroll listener pa
+    }
+
+    var scrollThreshold = shopSection.offsetTop - nav.offsetHeight;
+
+    window.addEventListener('resize', function () {
+        scrollThreshold = shopSection.offsetTop - nav.offsetHeight;
+    }, { passive: true });
+
+    var navTicking = false;
     window.addEventListener('scroll', function () {
-        var shopSection = document.getElementById('shop');
-        var threshold = shopSection ? shopSection.offsetTop - nav.offsetHeight : 10;
-        nav.classList.toggle('is-scrolled', window.scrollY > threshold);
+        if (navTicking) return;
+        navTicking = true;
+        requestAnimationFrame(function () {
+            nav.classList.toggle('is-scrolled', window.scrollY > scrollThreshold);
+            navTicking = false;
+        });
     }, { passive: true });
 })();
 </script>

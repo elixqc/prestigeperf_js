@@ -1,12 +1,20 @@
-const { Order, OrderDetail, Product, User, Cart } = require('../models');
-const { sendOrderStatusEmail } = require('../utils/mailer');
+const { Order, OrderDetail, Product, User, Cart, ProductImage } = require('../models');
+const { sendOrderStatusEmail } = require('../utils/mailer');;
+
 
 exports.getAllOrders = async (req, res) => {
     try {
         const orders = await Order.findAll({
             include: [
                 { model: User, attributes: ['username', 'email', 'address', 'contact_number'] },
-                { model: OrderDetail, include: [{ model: Product, attributes: ['product_name', 'selling_price'] }] }
+                {
+                    model: OrderDetail,
+                    include: [{
+                        model: Product,
+                        attributes: ['product_name', 'selling_price'],
+                        include: [{ model: ProductImage, attributes: ['image_path'] }]
+                    }]
+                }
             ]
         });
         res.json({ success: true, orders });
@@ -20,7 +28,15 @@ exports.getMyOrders = async (req, res) => {
         const orders = await Order.findAll({
             where: { user_id: req.user.user_id },
             include: [
-                { model: OrderDetail, include: [{ model: Product, attributes: ['product_name', 'selling_price'] }] }
+                { model: User, attributes: ['username', 'address', 'contact_number'] },
+                {
+                    model: OrderDetail,
+                    include: [{
+                        model: Product,
+                        attributes: ['product_name', 'selling_price'],
+                        include: [{ model: ProductImage, attributes: ['image_path'] }]
+                    }]
+                }
             ]
         });
         res.json({ success: true, orders });
@@ -148,6 +164,64 @@ exports.updateOrderStatus = async (req, res) => {
         }
 
         res.json({ success: true, message: 'Order status updated and email sent' });
+    } catch (err) {
+        try { await t.rollback(); } catch (rbErr) { console.error('Rollback error:', rbErr.message); }
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// NEW: customer self-cancel — only their own order, only if still Pending
+exports.cancelMyOrder = async (req, res) => {
+    const t = await Order.sequelize.transaction();
+    try {
+        const order = await Order.findOne({
+            where: { order_id: req.params.id, user_id: req.user.user_id },
+            transaction: t
+        });
+
+        if (!order) {
+            await t.rollback();
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        if (order.order_status !== 'Pending') {
+            await t.rollback();
+            return res.status(400).json({ success: false, message: 'Only pending orders can be cancelled' });
+        }
+
+        const details = await OrderDetail.findAll({
+            where: { order_id: req.params.id },
+            transaction: t
+        });
+
+        for (const detail of details) {
+            await Product.increment('stock_quantity', {
+                by: detail.quantity,
+                where: { product_id: detail.product_id },
+                transaction: t
+            });
+        }
+
+        order.order_status = 'Cancelled';
+        await order.save({ transaction: t });
+
+        await t.commit();
+
+        // Send status email OUTSIDE transaction, same pattern as updateOrderStatus
+        try {
+            const fullOrder = await Order.findByPk(order.order_id, {
+                include: [
+                    { model: User, attributes: ['username', 'email', 'address', 'contact_number'] },
+                    { model: OrderDetail, include: [{ model: Product, attributes: ['product_name', 'selling_price'] }] }
+                ]
+            });
+            await sendOrderStatusEmail(fullOrder, fullOrder.User);
+        } catch (mailErr) {
+            console.error('Email sending failed:', mailErr.message);
+        }
+
+        res.json({ success: true, message: 'Order cancelled and stock restored' });
+
     } catch (err) {
         try { await t.rollback(); } catch (rbErr) { console.error('Rollback error:', rbErr.message); }
         res.status(500).json({ success: false, message: err.message });

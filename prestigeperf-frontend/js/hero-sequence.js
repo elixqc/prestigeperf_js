@@ -19,15 +19,19 @@ $(function () {
     function resizeCanvas() {
         canvas.width = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
+        lastFrame = -1;
         render();
     }
 
+    let lastFrame = -1;
+
     // Draw current frame, "cover"-fit so it fills the canvas without distortion
     function render() {
-        const img = images[Math.round(playhead.frame)];
+        const frameIndex = Math.round(playhead.frame);
+        if (frameIndex === lastFrame) return; // nothing changed, skip the draw
+        const img = images[frameIndex];
         if (!img || !img.complete || !img.naturalWidth) return;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        lastFrame = frameIndex;
 
         const canvasRatio = canvas.width / canvas.height;
         const imgRatio = img.naturalWidth / img.naturalHeight;
