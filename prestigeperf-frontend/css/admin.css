@@ -5,29 +5,111 @@
    so it inherits :root tokens (--primary, --gold, --text-dark…)
    ============================================================ */
 
-/* ─── Dashboard stat cards ─────────────────────────────────── */
+/* ─── Dashboard hero + stat cards ─────────────────────────── */
+.pp-dashboard-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 28px;
+  border-radius: 18px;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, rgba(139, 26, 74, 0.08), rgba(201, 169, 110, 0.12));
+  border: 1px solid rgba(201, 169, 110, 0.24);
+  box-shadow: 0 12px 32px rgba(26, 13, 20, 0.05);
+}
+.pp-dashboard-hero h3 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: var(--text-dark);
+  margin: 4px 0 6px;
+}
+.pp-dashboard-hero p {
+  margin: 0;
+  color: var(--text-mid);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.pp-dashboard-hero-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(201, 169, 110, 0.32);
+  box-shadow: 0 6px 18px rgba(26, 13, 20, 0.04);
+}
+.pp-dashboard-hero-badge span {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.pp-dashboard-hero-badge strong {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--primary);
+}
+
 .pp-stat {
   position: relative;
   overflow: hidden;
+  min-height: 150px;
+  border-radius: 16px;
+  padding: 20px 22px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 16px 36px rgba(26, 13, 20, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.pp-stat:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 42px rgba(26, 13, 20, 0.16);
 }
 .pp-stat-wine  { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
 .pp-stat-ink   { background: linear-gradient(135deg, #2d2d2d, #1a1a1a); }
-.pp-stat-gold  { background: linear-gradient(135deg, var(--gold), #b8933a); }
-.pp-stat-plum  { background: linear-gradient(135deg, #5a3d4a, #3d2030); }
+.pp-stat-gold  { background: linear-gradient(135deg, #bf8f4d, #8c5d24); }
+.pp-stat-plum  { background: linear-gradient(135deg, #9b4f6a, #6f2a46); }
+.pp-stat::before {
+  content: "";
+  position: absolute;
+  right: -24px;
+  bottom: -24px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.09);
+}
 .pp-stat-icon {
   position: absolute;
-  right: 16px;
-  top: 16px;
+  right: 18px;
+  top: 18px;
   font-size: 26px;
   color: rgba(255, 255, 255, 0.18);
+}
+.pp-stat h6 {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.95;
+  margin-bottom: 8px;
+}
+.pp-stat h2 {
+  font-family: var(--font-display);
+  font-size: 34px;
+  margin: 0;
 }
 
 /* ─── Dashboard period toggle ──────────────────────────────── */
 .pp-period-group {
   display: inline-flex;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+  border: 1px solid rgba(201, 169, 110, 0.28);
+  border-radius: 999px;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 6px 16px rgba(26, 13, 20, 0.04);
 }
 .pp-period-btn {
   font-family: var(--font-ui);
@@ -35,15 +117,13 @@
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  background: #fff;
+  background: transparent;
   border: none;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
   color: var(--text-mid);
   padding: 8px 16px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
-.pp-period-btn:last-child { border-right: none; }
 .pp-period-btn:hover { color: var(--primary); background: rgba(139, 26, 74, 0.04); }
 .pp-period-btn.active {
   background: var(--primary);
@@ -56,13 +136,109 @@
   font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--gold);
   margin-bottom: 14px;
 }
 
 /* ─── Admin canvas ────────────────────────────────────────── */
 .pp-admin-body {
-  background: var(--light-bg);
+  background: #1a0d14;
+  color: #f8f7f4;
+}
+
+.pp-dashboard-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 42px;
+  padding: 26px 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.pp-dashboard-eyebrow {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 18px;
+}
+.pp-dashboard-title {
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, 4.4vw, 4.8rem);
+  line-height: 0.95;
+  color: #ffffff;
+  margin: 0;
+}
+.pp-dashboard-subtitle {
+  max-width: 620px;
+  margin: 16px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.pp-period-group {
+  display: inline-flex;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.pp-period-btn {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.68);
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pp-period-btn:hover { color: #ffffff; background: rgba(255,255,255,0.08); }
+.pp-period-btn.active {
+  background: rgba(139, 26, 74, 0.98);
+  color: #fff;
+}
+
+.pp-main {
+  margin-left: 240px;
+  padding: 30px;
+  min-height: 100vh;
+    background: #12101a;
+    background: linear-gradient(180deg, rgba(18,16,26,0.96) 0%, rgba(22,18,34,0.98) 100%);
+  overflow: hidden;
+  min-height: 170px;
+  border-radius: 18px;
+  padding: 24px 26px;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+.pp-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.18);
+}
+.pp-stat h6 {
+  color: rgba(255, 255, 255, 0.68);
+}
+.pp-stat h2 {
+  color: #fff;
+}
+
+.pp-chart-title {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+  margin-bottom: 14px;
 }
 
 /* ─── Sidebar icon refinement (Font Awesome, not emoji) ───── */
@@ -106,7 +282,7 @@
   font-size: 30px;
   font-weight: 400;
   letter-spacing: 0.3px;
-  color: var(--text-dark);
+  color: #f0e9e9;
   margin: 0;
   line-height: 1.1;
 }
@@ -181,10 +357,10 @@
 
 /* ─── Card shell (wraps tables, forms, panels) ───────────── */
 .pp-admin-card {
-  background: #fff;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  background: #1a0d14;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(26, 13, 20, 0.16);
   padding: 26px;
 }
 .pp-admin-card-header {
@@ -211,17 +387,19 @@
   font-family: var(--font-ui);
   font-size: 13px;
   color: var(--text-dark);
+  background: transparent;
 }
 .pp-table-wrap table.dataTable thead th {
-  background: var(--text-dark);
+  background: linear-gradient(90deg, var(--text-dark), #2c1320);
   color: #fff;
-  font-size: 9.5px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
+  font-size: 9.2px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   padding: 14px 16px;
   border: none !important;
   white-space: nowrap;
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,0.06);
 }
 .pp-table-wrap table.dataTable thead th:first-child { border-top-left-radius: 6px; }
 .pp-table-wrap table.dataTable thead th:last-child { border-top-right-radius: 6px; }
@@ -230,12 +408,14 @@
   vertical-align: middle;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
   border-top: none !important;
+  background: rgba(255,255,255,0.72);
+  color: #8b1a4a;
 }
 .pp-table-wrap table.dataTable tbody tr {
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 .pp-table-wrap table.dataTable tbody tr:hover {
-  background: rgba(139, 26, 74, 0.035);
+  background: rgba(139, 26, 74, 0.04);
 }
 .pp-table-wrap table.dataTable.stripe tbody tr.odd,
 .pp-table-wrap table.dataTable.stripe tbody tr.even {
@@ -243,16 +423,32 @@
 }
 .pp-table-wrap .dataTables_wrapper .dataTables_filter input,
 .pp-table-wrap .dataTables_wrapper .dataTables_length select {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-size: 12.5px;
-  color: var(--text-dark);
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #f0e9e9; /* light text to match admin titles */
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+  min-height: 36px;
+  height: 36px;
+  line-height: 1.2;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  appearance: none;
 }
 .pp-table-wrap .dataTables_wrapper .dataTables_filter input:focus,
 .pp-table-wrap .dataTables_wrapper .dataTables_length select:focus {
   outline: none;
-  border-color: var(--gold);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.02);
+}
+
+/* Fix select inner text alignment for browsers that render custom selects */
+.pp-table-wrap .dataTables_wrapper .dataTables_length select::-ms-expand { display: none; }
+.pp-table-wrap .dataTables_wrapper .dataTables_length select option {
+  color: #1a0d14;
 }
 .pp-table-wrap .dataTables_wrapper .dataTables_info,
 .pp-table-wrap .dataTables_wrapper .dataTables_length label,
@@ -262,22 +458,47 @@
   color: var(--text-muted);
 }
 .pp-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button {
-  border-radius: 3px !important;
+  border-radius: 999px !important;
   font-size: 11.5px;
-  padding: 5px 11px !important;
-  margin-left: 4px;
-  border: 1px solid transparent !important;
-  color: var(--text-mid) !important;
-}
-.pp-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-  background: rgba(139, 26, 74, 0.08) !important;
-  border-color: transparent !important;
-  color: var(--primary) !important;
-}
-.pp-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  padding: 0 !important;
+  margin-left: 8px;
+  border: 1px solid rgba(0,0,0,0.08) !important;
   background: var(--primary) !important;
   color: #fff !important;
-  border-color: var(--primary) !important;
+  box-shadow: none !important;
+  transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+}
+.pp-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  transform: translateY(-2px);
+  background: var(--primary-dark) !important;
+}
+.pp-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: var(--primary-dark) !important;
+  color: #fff !important;
+  border-color: var(--primary-dark) !important;
+  box-shadow: 0 8px 20px rgba(139, 26, 74, 0.18) !important;
+}
+
+/* Ensure inner anchors/spans don't render a white box — make the LI the pill */
+.pp-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button a,
+.pp-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button .page-link,
+.pp-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button span {
+  background: transparent !important;
+  border: none !important;
+  color: inherit !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 14px !important;
+  height: auto !important;
+  box-shadow: none !important;
+  border-radius: 999px !important;
+}
+
+/* Make sure the Previous/Next text uses proper color */
+.pp-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button.previous a,
+.pp-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button.next a {
+  color: #fff !important;
 }
 .pp-table-wrap table.dataTable.no-footer {
   border-bottom: none !important;
@@ -321,7 +542,7 @@
 .pp-pill-inactive,
 .pp-pill-outstock  { background: rgba(198, 40, 40, 0.1); color: #b71c1c; }
 .pp-pill-pending    { background: #fff8e1; color: #8a6500; }
-.pp-pill-processing { background: #e3f2fd; color: #0d47a1; }
+.pp-pill-processing { background: rgba(139,26,74,0.12); color: #f0e9e9; }
 .pp-pill-delivery   { background: rgba(201, 169, 110, 0.18); color: #8a6500; }
 .pp-pill-completed  { background: rgba(139, 26, 74, 0.1); color: var(--primary); }
 .pp-pill-cancelled  { background: rgba(198, 40, 40, 0.1); color: #b71c1c; }
