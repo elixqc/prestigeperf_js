@@ -25,10 +25,10 @@ $(function () {
 
     let lastFrame = -1;
 
-    // Draw current frame, "cover"-fit so it fills the canvas without distortion
+    // Draw current frame
     function render() {
         const frameIndex = Math.round(playhead.frame);
-        if (frameIndex === lastFrame) return; // nothing changed, skip the draw
+        if (frameIndex === lastFrame) return;
         const img = images[frameIndex];
         if (!img || !img.complete || !img.naturalWidth) return;
         lastFrame = frameIndex;

@@ -26,7 +26,7 @@ function createChatWidget() {
         <div style="width:32px;height:32px;background:rgba(239,159,39,0.15);border:1px solid rgba(239,159,39,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#EF9F27;font-size:14px;">✦</div>
         <div>
           <p style="margin:0;color:#f5e6c8;font-size:15px;">Fragrance Consultant</p>
-          <p style="margin:0;color:rgba(239,159,39,0.7);font-size:11px;letter-spacing:0.08em;">PRESTIGEPERF · AI</p>
+          <p style="margin:0;color:rgba(239,159,39,0.7);font-size:11px;letter-spacing:0.08em;">PRESTIGE PERFUMERY · AI</p>
         </div>
         <button onclick="toggleChat()" style="margin-left:auto;background:none;border:none;color:#f5e6c8;cursor:pointer;font-size:18px;">✕</button>
       </div>

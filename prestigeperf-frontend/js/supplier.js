@@ -30,8 +30,9 @@ $(document).ready(function () {
 
     // Only reaches here if admin
     $('body').show();
-    
+
     let table;
+    let showingInactive = false;
 
     // Load sidebar
     $.get("sidebar.html?v=" + new Date().getTime(), function (data) {
@@ -108,29 +109,40 @@ $(document).ready(function () {
     });
 
     function loadSuppliers() {
+        const endpoint = showingInactive
+            ? `${url}api/v1/suppliers?show_disabled=true`
+            : `${url}api/v1/suppliers`;
+
         $.ajax({
             method: "GET",
-            url: `${url}api/v1/suppliers`,
+            url: endpoint,
             success: function (data) {
                 const rows = [];
 
                 $.each(data.suppliers, function (i, s) {
+                    const actions = showingInactive
+                        ? `<div class="pp-row-actions">
+                               <button class="pp-btn-icon btn-restore" title="Restore"
+                                  data-id="${s.supplier_id}"><i class="fas fa-undo"></i></button>
+                           </div>`
+                        : `<div class="pp-row-actions">
+                               <button class="pp-btn-icon edit btn-edit" title="Edit"
+                                  data-id="${s.supplier_id}"
+                                  data-name="${s.supplier_name}"
+                                  data-person="${s.contact_person ?? ''}"
+                                  data-number="${s.contact_number ?? ''}"
+                                  data-address="${s.address ?? ''}"><i class="fas fa-pen"></i></button>
+                               <button class="pp-btn-icon delete btn-delete" title="Delete"
+                                  data-id="${s.supplier_id}"><i class="fas fa-trash"></i></button>
+                           </div>`;
+
                     rows.push([
                         i + 1,
                         `<div class="pp-row-title">${s.supplier_name}</div>`,
                         s.contact_person ?? '—',
                         s.contact_number ?? '—',
                         s.address ?? '—',
-                        `<div class="pp-row-actions">
-                             <button class="pp-btn-icon edit btn-edit" title="Edit"
-                                data-id="${s.supplier_id}"
-                                data-name="${s.supplier_name}"
-                                data-person="${s.contact_person ?? ''}"
-                                data-number="${s.contact_number ?? ''}"
-                                data-address="${s.address ?? ''}"><i class="fas fa-pen"></i></button>
-                             <button class="pp-btn-icon delete btn-delete" title="Delete"
-                                data-id="${s.supplier_id}"><i class="fas fa-trash"></i></button>
-                         </div>`
+                        actions
                     ]);
                 });
 
@@ -154,6 +166,14 @@ $(document).ready(function () {
             }
         });
     }
+
+    // Toggle active/inactive — same pattern as item.js / category.js
+    $('#btn-toggle-view').on('click', function () {
+        showingInactive = !showingInactive;
+        $(this).text(showingInactive ? 'Show Active' : 'Show Inactive');
+        $('#btn-add').toggle(!showingInactive);
+        loadSuppliers();
+    });
 
     loadSuppliers();
 
@@ -249,6 +269,46 @@ $(document).ready(function () {
                             timer: 1500
                         });
                         loadSuppliers();
+                    }
+                });
+            }
+        });
+    });
+
+    // Restore
+    $(document).on('click', '.btn-restore', function () {
+        const id = $(this).data('id');
+
+        Swal.fire({
+            title: 'Restore this supplier?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#8b1a4a',
+            confirmButtonText: 'Yes, restore it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    method: 'PUT',
+                    url: `${url}api/v1/suppliers/${id}/restore`,
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    success: function () {
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Supplier restored!',
+                            position: 'bottom-right',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        loadSuppliers();
+                    },
+                    error: function (err) {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.responseJSON?.message || 'Restore failed',
+                            position: 'bottom-right',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 });
             }

@@ -155,7 +155,10 @@ const generateEmailHTML = (order, user) => {
 //  PDF RECEIPT GENERATOR
 // ─────────────────────────────────────────────
 const generateReceiptPDF = (order, user) => {
-    const formatCurrency = amount => `\u20B1${parseFloat(amount || 0).toFixed(2)}`;
+    // PDFKit's standard fonts (Helvetica, etc.) only support WinAnsiEncoding,
+    // which does NOT include the ₱ glyph — it silently renders as "±" instead.
+    // Using "PHP" as plain text avoids that font limitation entirely.
+    const formatCurrency = amount => `PHP ${parseFloat(amount || 0).toFixed(2)}`;
 
     const BG        = '#111111';
     const BG_CARD   = '#1a1a1a';

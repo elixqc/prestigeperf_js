@@ -64,7 +64,7 @@ $(document).ready(function () {
 
     $.validator.addMethod('requireImage', function (value, element) {
         const id = $('#product_id').val();
-        if (id) return true; 
+        if (id) return true;
         return element.files.length > 0; // adding — required
     }, 'Please upload at least one image!');
 
@@ -99,7 +99,7 @@ $(document).ready(function () {
             variant: {
                 required: true
             },
-            images: {      
+            images: {
                 requireImage: true
             }
 
@@ -133,14 +133,20 @@ $(document).ready(function () {
             variant: {
                 required: 'Variant is required! (e.g. 100ml)'
             },
-            images: {          // ← add dito
+            images: {
                 requireImage: 'Please upload at least one image!'
             }
         },
         errorElement: 'label',
         errorClass: 'error',
         errorPlacement: function (error, element) {
-            error.insertAfter(element);
+            // route the error next to the dropzone for the file input,
+            // otherwise default placement right after the field
+            if (element.attr('id') === 'images') {
+                error.insertAfter('#dropzone');
+            } else {
+                error.insertAfter(element);
+            }
         }
     });
 
@@ -267,32 +273,121 @@ $(document).ready(function () {
 
     loadProducts();
 
-    // Image preview
-    $('#images').on('change', function () {
-        $('#image-preview').hide().empty();
-        const files = this.files;
-        if (files.length > 0) {
-            $.each(files, function (i, file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    $('#image-preview').append(
-                        `<img src="${e.target.result}" style="height:60px; width:60px; object-fit:cover; border-radius:4px; margin-right:5px;">`
-                    ).show();
-                };
-                reader.readAsDataURL(file);
-            });
+    /* ===============================================================
+       Atelier Entry modal — image dropzone + thumbnails + margin badge
+       =============================================================== */
+
+    const $images = $('#images');
+    const $dropzone = $('#dropzone');
+    const $preview = $('#image-preview');
+
+    // Renders the "NEW" thumbnails for whatever is currently in the
+    // #images file input, each with its own remove button.
+    function renderNewThumbs() {
+        $preview.empty();
+        const files = $images[0].files;
+
+        if (!files || files.length === 0) {
+            $preview.hide();
+            return;
         }
+
+        $.each(files, function (i, file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $preview.append(`
+                    <div class="pp-thumb pp-thumb-new" data-new-index="${i}">
+                        <img src="${e.target.result}">
+                        <button type="button" class="pp-thumb-remove" title="Remove">&times;</button>
+                    </div>
+                `);
+            };
+            reader.readAsDataURL(file);
+        });
+        $preview.show();
+    }
+
+    // Replace the file input's FileList with a filtered version
+    // (native <input type="file"> lists are read-only, so we
+    // rebuild it via DataTransfer).
+    function removeNewFileAt(index) {
+        const dt = new DataTransfer();
+        const files = $images[0].files;
+        $.each(files, function (i, file) {
+            if (i !== index) dt.items.add(file);
+        });
+        $images[0].files = dt.files;
+        renderNewThumbs();
+    }
+
+    $images.on('change', renderNewThumbs);
+
+    $(document).on('click', '.pp-thumb-new .pp-thumb-remove', function () {
+        const index = parseInt($(this).closest('.pp-thumb').data('new-index'), 10);
+        removeNewFileAt(index);
     });
+
+    // Drag & drop support on the dropzone
+    ['dragenter', 'dragover'].forEach(evt => {
+        $dropzone.on(evt, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $dropzone.addClass('is-dragover');
+        });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+        $dropzone.on(evt, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $dropzone.removeClass('is-dragover');
+        });
+    });
+    $dropzone.on('drop', function (e) {
+        const dropped = e.originalEvent.dataTransfer.files;
+        if (!dropped || dropped.length === 0) return;
+
+        const dt = new DataTransfer();
+        $.each($images[0].files, function (i, f) { dt.items.add(f); });
+        $.each(dropped, function (i, f) {
+            if (f.type.startsWith('image/')) dt.items.add(f);
+        });
+        $images[0].files = dt.files;
+        renderNewThumbs();
+    });
+
+    // Live margin badge
+    function updateMargin() {
+        const cost = parseFloat($('#initial_price').val());
+        const sell = parseFloat($('#selling_price').val());
+        const $val = $('#margin-value');
+
+        if (isNaN(cost) || isNaN(sell) || cost <= 0) {
+            $val.removeClass('is-negative').addClass('is-flat').text('—');
+            return;
+        }
+
+        const profit = sell - cost;
+        const pct = (profit / cost) * 100;
+
+        $val.removeClass('is-flat is-negative');
+        if (profit < 0) $val.addClass('is-negative');
+
+        $val.text(`₱${profit.toFixed(2)} · ${pct.toFixed(1)}%`);
+    }
+
+    $(document).on('input', '#initial_price, #selling_price', updateMargin);
 
     // Reset modal for Add
     $('#btn-add').on('click', function () {
-        $('#modal-title').text('Add Product');
+        $('#modal-title').html('Add <em>Product</em>');
+        $('.pp-pmodal-eyebrow').text('Catalog · New Entry');
         $('#product_id').val('');
         $('#productForm')[0].reset();
-        $('#image-preview').hide().empty();
+        $preview.hide().empty();
         $('#existing-images').empty();
         $('#productForm').validate().resetForm();
         $('.error').removeClass('error');
+        updateMargin();
         $('#productModal').modal('show');
     });
 
@@ -304,7 +399,8 @@ $(document).ready(function () {
             url: `${url}api/v1/products/${id}`,
             success: function (data) {
                 const p = data.product;
-                $('#modal-title').text('Edit Product');
+                $('#modal-title').html('Edit <em>Product</em>');
+                $('.pp-pmodal-eyebrow').text('Catalog · #' + p.product_id);
                 $('#product_id').val(p.product_id);
                 $('#product_name').val(p.product_name);
                 $('#description').val(p.description ?? '');
@@ -314,21 +410,18 @@ $(document).ready(function () {
                 $('#selling_price').val(p.selling_price);
                 $('#stock_quantity').val(p.stock_quantity);
                 $('#variant').val(p.variant ?? '');
-                $('#images').val('');
-                $('#image-preview').hide().empty();
+                $images.val('');
+                $preview.hide().empty();
                 $('#productForm').validate().resetForm();
                 $('.error').removeClass('error');
+                updateMargin();
 
                 $('#existing-images').empty();
                 (p.ProductImages || []).forEach(img => {
                     $('#existing-images').append(`
-                        <div class="position-relative d-inline-block mr-2 mb-2" data-img-id="${img.image_id}">
-                            <img src="${url}images/${img.image_path}"
-                                 style="height:60px; width:60px; object-fit:cover; border-radius:4px;">
-                            <button type="button" class="btn btn-danger btn-sm btn-delete-image"
-                                style="position:absolute; top:-8px; right:-8px; padding:0 5px; line-height:1.2;">
-                                &times;
-                            </button>
+                        <div class="pp-thumb" data-img-id="${img.image_id}">
+                            <img src="${url}images/${img.image_path}">
+                            <button type="button" class="pp-thumb-remove btn-delete-image" title="Delete">&times;</button>
                         </div>
                     `);
                 });
@@ -381,7 +474,7 @@ $(document).ready(function () {
         formData.append('stock_quantity', $('#stock_quantity').val());
         formData.append('variant', $('#variant').val());
 
-        const files = $('#images')[0].files;
+        const files = $images[0].files;
         for (let i = 0; i < files.length; i++) {
             formData.append('images', files[i]);
         }

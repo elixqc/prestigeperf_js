@@ -106,17 +106,16 @@ $(document).ready(function () {
                     rows.push([
                         order.order_id,
                         `<div class="pp-row-title">${order.User?.username ?? 'N/A'}</div>
-                         <div class="pp-row-subtext">${order.User?.email ?? ''}</div>`,
+                        <div class="pp-row-subtext">${order.User?.email ?? ''}</div>`,
                         itemsSummary,
                         `₱${total.toFixed(2)}`,
                         statusPillHtml(order.order_status),
                         new Date(order.order_date ?? order.createdAt).toLocaleDateString(),
                         `<div class="pp-row-actions">
-                             <button class="pp-btn-icon btn-view-order" title="View details" data-id="${order.order_id}"><i class="fas fa-eye"></i></button>
-                             <button class="pp-btn-icon edit btn-update-status" title="Update status"
+                            <button class="pp-btn-icon btn-view-order" title="View details" data-id="${order.order_id}"><i class="fas fa-eye"></i></button>
+                            <button class="pp-btn-icon edit btn-update-status" title="Update status"
                                 data-id="${order.order_id}" data-status="${order.order_status}"><i class="fas fa-rotate"></i></button>
-                             <button class="pp-btn-icon delete btn-delete-order" title="Delete" data-id="${order.order_id}"><i class="fas fa-trash"></i></button>
-                         </div>`
+                        </div>`
                     ]);
                 });
 
@@ -208,6 +207,15 @@ $(document).ready(function () {
         const id = $('#update-order-id').val();
         const order_status = $('#order_status').val();
 
+        const $btn = $(this);
+        const $spinner = $('#update-status-spinner');
+        const $btnText = $('#update-status-btn-text');
+
+        // Enter loading state
+        $btn.prop('disabled', true).addClass('is-loading');
+        $spinner.removeClass('d-none');
+        $btnText.text('Updating...');
+
         $.ajax({
             method: 'PUT',
             url: `${url}api/v1/orders/${id}/status`,
@@ -233,38 +241,11 @@ $(document).ready(function () {
                     showConfirmButton: false,
                     timer: 1500
                 });
-            }
-        });
-    });
-
-    // Delete order
-    $(document).on('click', '.btn-delete-order', function (e) {
-        e.stopPropagation();
-        const id = $(this).data('id');
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'This order will be permanently deleted.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#8b1a4a',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    method: 'DELETE',
-                    url: `${url}api/v1/orders/${id}`,
-                    headers: { Authorization: `Bearer ${token}` },
-                    success: function () {
-                        Swal.fire({
-                            icon: 'success',
-                            text: 'Order deleted!',
-                            position: 'bottom-right',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                        loadOrders();
-                    }
-                });
+            },
+            complete: function () {
+                $btn.prop('disabled', false).removeClass('is-loading');
+                $spinner.addClass('d-none');
+                $btnText.text('Update');
             }
         });
     });

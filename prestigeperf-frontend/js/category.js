@@ -31,6 +31,7 @@ $(document).ready(function () {
     $('body').show();
 
     let table;
+    let showingInactive = false;
 
     // Load sidebar
     $.get("sidebar.html?v=" + new Date().getTime(), function (data) {
@@ -79,23 +80,40 @@ $(document).ready(function () {
     });
 
     function loadCategories() {
+        const endpoint = showingInactive
+            ? `${url}api/v1/categories?show_disabled=true`
+            : `${url}api/v1/categories`;
+
         $.ajax({
             method: "GET",
-            url: `${url}api/v1/categories`,
+            url: endpoint,
             success: function (data) {
                 const rows = [];
 
-                $.each(data.categories, function (i, c) {
+                // when showing inactive, only display the disabled ones
+                // (mirrors item.js's /inactive/list behavior)
+                const categories = showingInactive
+                    ? data.categories.filter(c => c.deleted_at)
+                    : data.categories;
+
+                $.each(categories, function (i, c) {
+                    const actions = showingInactive
+                        ? `<div class="pp-row-actions">
+                               <button class="pp-btn-icon btn-restore" title="Restore"
+                                  data-id="${c.category_id}"><i class="fas fa-undo"></i></button>
+                           </div>`
+                        : `<div class="pp-row-actions">
+                               <button class="pp-btn-icon edit btn-edit" title="Edit"
+                                  data-id="${c.category_id}"
+                                  data-name="${c.category_name}"><i class="fas fa-pen"></i></button>
+                               <button class="pp-btn-icon delete btn-delete" title="Delete"
+                                  data-id="${c.category_id}"><i class="fas fa-trash"></i></button>
+                           </div>`;
+
                     rows.push([
                         i + 1,
                         `<div class="pp-row-title">${c.category_name}</div>`,
-                        `<div class="pp-row-actions">
-                             <button class="pp-btn-icon edit btn-edit" title="Edit"
-                                data-id="${c.category_id}"
-                                data-name="${c.category_name}"><i class="fas fa-pen"></i></button>
-                             <button class="pp-btn-icon delete btn-delete" title="Delete"
-                                data-id="${c.category_id}"><i class="fas fa-trash"></i></button>
-                         </div>`
+                        actions
                     ]);
                 });
 
@@ -116,6 +134,14 @@ $(document).ready(function () {
             }
         });
     }
+
+    // Toggle active/inactive — same pattern as item.js
+    $('#btn-toggle-view').on('click', function () {
+        showingInactive = !showingInactive;
+        $(this).text(showingInactive ? 'Show Active' : 'Show Inactive');
+        $('#btn-add').toggle(!showingInactive);
+        loadCategories();
+    });
 
     loadCategories();
 
@@ -205,6 +231,46 @@ $(document).ready(function () {
                             timer: 1500
                         });
                         loadCategories();
+                    }
+                });
+            }
+        });
+    });
+
+    // Restore
+    $(document).on('click', '.btn-restore', function () {
+        const id = $(this).data('id');
+
+        Swal.fire({
+            title: 'Restore this category?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#8b1a4a',
+            confirmButtonText: 'Yes, restore it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    method: 'PUT',
+                    url: `${url}api/v1/categories/${id}/restore`,
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    success: function () {
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Category restored!',
+                            position: 'bottom-right',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        loadCategories();
+                    },
+                    error: function (err) {
+                        Swal.fire({
+                            icon: 'error',
+                            text: err.responseJSON?.message || 'Restore failed',
+                            position: 'bottom-right',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 });
             }

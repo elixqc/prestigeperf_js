@@ -2,7 +2,13 @@ const { Supplier } = require('../models');
 
 exports.getAllSuppliers = async (req, res) => {
     try {
-        const suppliers = await Supplier.findAll({ where: { is_active: 1, deleted_at: null } });
+        const showDisabled = req.query.show_disabled === 'true';
+
+        const suppliers = await Supplier.findAll(
+            showDisabled
+                ? { where: { is_active: 0, deleted_at: { [require('sequelize').Op.ne]: null } } }
+                : { where: { is_active: 1, deleted_at: null } }
+        );
         res.json({ success: true, suppliers });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -33,6 +39,15 @@ exports.deleteSupplier = async (req, res) => {
     try {
         await Supplier.update({ is_active: 0, deleted_at: new Date() }, { where: { supplier_id: req.params.id } });
         res.json({ success: true, message: 'Supplier deleted' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+exports.restoreSupplier = async (req, res) => {
+    try {
+        await Supplier.update({ is_active: 1, deleted_at: null }, { where: { supplier_id: req.params.id } });
+        res.json({ success: true, message: 'Supplier restored' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

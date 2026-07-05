@@ -1,0 +1,83 @@
+/* ==========================================================
+   Reusable Loading / Disabled Button States
+   Use across any button in the app that triggers an async action
+   ========================================================== */
+
+/* Base layout fix: aligns spinner + text neatly side by side */
+.pp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+/* Generic spinner sizing/alignment, works with Bootstrap's spinner-border */
+.pp-btn .spinner-border {
+    width: 1em;
+    height: 1em;
+    border-width: 0.15em;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* Hide spinner cleanly without layout jump */
+.pp-btn .spinner-border.d-none {
+    display: none;
+}
+
+/* Greyed-out / disabled loading state — apply this class via JS while a request is in flight */
+.pp-btn.is-loading,
+.pp-btn:disabled,
+.pp-btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    filter: grayscale(20%);
+}
+
+/* Optional: subtle pulse so it visibly reads as "working" even on fast requests */
+.pp-btn.is-loading {
+    animation: pp-btn-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes pp-btn-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.8; }
+}
+/* ==========================================================
+   Extend loading/disabled states to storefront-style buttons
+   (pp-btn-cancel-order, pp-btn-view-order, pp-btn-close-modal)
+   ========================================================== */
+.pp-btn-cancel-order {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.pp-btn-cancel-order .spinner-border {
+    width: 1em;
+    height: 1em;
+    border-width: 0.15em;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.pp-btn-cancel-order .spinner-border.d-none {
+    display: none;
+}
+
+.pp-btn-cancel-order.is-loading,
+.pp-btn-cancel-order:disabled,
+.pp-btn-cancel-order[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    filter: grayscale(20%);
+}
+
+.pp-btn-cancel-order.is-loading {
+    animation: pp-btn-pulse 1.1s ease-in-out infinite;
+}

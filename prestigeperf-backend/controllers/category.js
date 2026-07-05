@@ -2,7 +2,11 @@ const { Category } = require('../models');
 
 exports.getAllCategories = async (req, res) => {
     try {
-        const categories = await Category.findAll({ where: { deleted_at: null } });
+        const showDisabled = req.query.show_disabled === 'true';
+
+        const categories = await Category.findAll(
+            showDisabled ? {} : { where: { deleted_at: null } }
+        );
         res.json({ success: true, categories });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -33,6 +37,15 @@ exports.deleteCategory = async (req, res) => {
     try {
         await Category.update({ deleted_at: new Date() }, { where: { category_id: req.params.id } });
         res.json({ success: true, message: 'Category deleted' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+exports.restoreCategory = async (req, res) => {
+    try {
+        await Category.update({ deleted_at: null }, { where: { category_id: req.params.id } });
+        res.json({ success: true, message: 'Category restored' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

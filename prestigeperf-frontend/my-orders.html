@@ -9,7 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/nav.css"> 
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/loading.css">
 </head>
 <body>
 
@@ -72,7 +73,10 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="pp-btn-cancel-order" id="modalCancelBtn" style="display:none;">Cancel Order</button>
+        <button type="button" class="pp-btn-cancel-order" id="modalCancelBtn" style="display:none;">
+            <span class="spinner-border spinner-border-sm d-none" id="modal-cancel-spinner" role="status" aria-hidden="true"></span>
+            <span id="modal-cancel-btn-text">Cancel Order</span>
+        </button>
         <button type="button" class="pp-btn-close-modal" data-dismiss="modal">Close</button>
       </div>
     </div>

@@ -139,7 +139,11 @@ $(document).ready(function () {
                 </div>
 
                 <div class="d-flex justify-content-end align-items-center pp-order-actions mt-3">
-                    ${order.order_status === 'Pending' ? `<button type="button" class="pp-btn-cancel-order" data-order-id="${order.order_id}">Cancel Order</button>` : ''}
+                    ${order.order_status === 'Pending' ? `
+                        <button type="button" class="pp-btn-cancel-order" data-order-id="${order.order_id}">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            <span class="pp-btn-label-text">Cancel Order</span>
+                        </button>` : ''}
                     <button type="button" class="pp-btn-view-order" data-order-id="${order.order_id}">View Details</button>
                 </div>
             </div>`;
@@ -175,7 +179,7 @@ $(document).ready(function () {
     }
 
     // Confirm + cancel
-    function confirmCancelOrder(orderId) {
+    function confirmCancelOrder(orderId, $btn) {
         Swal.fire({
             title: 'Cancel this order?',
             text: 'This action cannot be undone.',
@@ -189,12 +193,32 @@ $(document).ready(function () {
             color: '#1a0d14'
         }).then((result) => {
             if (result.isConfirmed) {
-                cancelOrder(orderId);
+                cancelOrder(orderId, $btn);
             }
         });
     }
 
-    function cancelOrder(orderId) {
+    // Toggle loading state on whichever cancel button triggered this
+    function setCancelButtonLoading($btn, isLoading) {
+        if (!$btn || !$btn.length) return;
+
+        const $spinner = $btn.find('.spinner-border');
+        const $label = $btn.find('.pp-btn-label-text, #modal-cancel-btn-text');
+
+        if (isLoading) {
+            $btn.prop('disabled', true).addClass('is-loading');
+            $spinner.removeClass('d-none');
+            $label.text('Cancelling...');
+        } else {
+            $btn.prop('disabled', false).removeClass('is-loading');
+            $spinner.addClass('d-none');
+            $label.text('Cancel Order');
+        }
+    }
+
+    function cancelOrder(orderId, $btn) {
+        setCancelButtonLoading($btn, true);
+
         $.ajax({
             method: 'PUT',
             url: `${url}api/v1/orders/${orderId}/cancel`,
@@ -233,6 +257,12 @@ $(document).ready(function () {
                     color: '#1a0d14',
                     iconColor: '#8b1a4a'
                 });
+            },
+            complete: function () {
+                // renderOrders() rebuilds the card DOM on success, so the original
+                // $btn reference from a card cancel becomes stale — only the modal
+                // button (which isn't rebuilt) reliably needs resetting here.
+                setCancelButtonLoading($('#modalCancelBtn'), false);
             }
         });
     }
@@ -257,11 +287,11 @@ $(document).ready(function () {
 
     $(document).on('click', '.pp-btn-cancel-order', function (e) {
         e.stopPropagation();
-        confirmCancelOrder($(this).data('order-id'));
+        confirmCancelOrder($(this).data('order-id'), $(this));
     });
 
     $(document).on('click', '#modalCancelBtn', function () {
-        confirmCancelOrder($(this).data('order-id'));
+        confirmCancelOrder($(this).data('order-id'), $(this));
     });
 
     // Fetch orders

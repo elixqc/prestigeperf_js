@@ -319,12 +319,13 @@
 }
 .pp-btn-outline {
   background: transparent;
-  border-color: rgba(0, 0, 0, 0.15);
-  color: var(--text-mid);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.85);
 }
 .pp-btn-outline:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(255, 255, 255, 0.04);
 }
 .pp-btn-gold {
   background: linear-gradient(160deg, var(--gold-light), var(--gold) 65%, #a3814f 100%);

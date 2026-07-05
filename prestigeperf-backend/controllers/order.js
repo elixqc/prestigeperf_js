@@ -228,31 +228,6 @@ exports.cancelMyOrder = async (req, res) => {
     }
 };
 
-exports.deleteOrder = async (req, res) => {
-    const t = await Order.sequelize.transaction();
-    try {
-        const details = await OrderDetail.findAll({
-            where: { order_id: req.params.id },
-            transaction: t
-        });
-
-        for (const detail of details) {
-            await Product.increment('stock_quantity', {
-                by: detail.quantity,
-                where: { product_id: detail.product_id },
-                transaction: t
-            });
-        }
-
-        await OrderDetail.destroy({ where: { order_id: req.params.id }, transaction: t });
-        await Order.destroy({ where: { order_id: req.params.id }, transaction: t });
-        await t.commit();
-        res.json({ success: true, message: 'Order deleted and stock restored' });
-    } catch (err) {
-        try { await t.rollback(); } catch (rbErr) { console.error('Rollback error:', rbErr.message); }
-        res.status(500).json({ success: false, message: err.message });
-    }
-};
 
 exports.getPaymentMethods = (req, res) => {
     const methods = ['COD', 'GCash'];
