@@ -77,6 +77,23 @@ const generateEmailHTML = (order, user) => {
         </td>
       </tr>
 
+      <!-- SHIP TO -->
+      <tr>
+        <td style="background:#120d04;border-left:1px solid #2e2010;border-right:1px solid #2e2010;padding:0 48px 28px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#1a1008;border:1px solid #2e2010;border-top:2px solid #c9a84c;border-radius:4px;">
+            <tr>
+              <td style="padding:16px 20px;">
+                <div style="color:#8a7a5a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Ship To</div>
+                <div style="color:#e8d9b5;font-size:14px;font-weight:bold;margin-bottom:4px;">${user.full_name || user.username || 'N/A'}</div>
+                ${user.contact_number ? `<div style="color:#a09070;font-size:13px;margin-bottom:2px;">${user.contact_number}</div>` : ''}
+                ${user.email ? `<div style="color:#a09070;font-size:13px;margin-bottom:2px;">${user.email}</div>` : ''}
+                ${user.address ? `<div style="color:#a09070;font-size:13px;">${user.address}</div>` : ''}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
       <!-- ORDER META CARDS -->
       <tr>
         <td style="background:#120d04;border-left:1px solid #2e2010;border-right:1px solid #2e2010;padding:0 48px 28px;">

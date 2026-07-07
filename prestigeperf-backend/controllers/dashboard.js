@@ -15,12 +15,47 @@ const getDateFilter = (period) => {
 // ─── Stats ────────────────────────────────────────────────────────────────────
 exports.getStats = async (req, res) => {
     try {
-        const totalProducts = await Product.count({ where: { is_active: 1 } });
-        const totalOrders = await Order.count();
+        const { period = 'all' } = req.query;
+        const dateFilter = getDateFilter(period);
+
+        const salesWhere = {
+            ...dateFilter,
+            order_status: 'completed'
+        };
+
+        const orderDetails = await OrderDetail.findAll({
+            attributes: ['quantity', 'price'],
+            include: [{
+                model: Order,
+                attributes: [],
+                where: salesWhere,
+                required: true
+            }],
+            raw: true,
+            nest: true
+        });
+
+        const totalSales = orderDetails.reduce(
+            (sum, d) => sum + (Number(d.quantity) * Number(d.price)),
+            0
+        );
+
+        const totalOrders = await Order.count({
+            where: Object.keys(dateFilter).length ? dateFilter : {}
+        });
         const totalUsers = await User.count({ where: { is_active: 1 } });
         const totalCategories = await Category.count({ where: { deleted_at: null } });
 
-        res.json({ success: true, stats: { totalProducts, totalOrders, totalUsers, totalCategories } });
+        res.json({
+            success: true,
+            period,
+            stats: {
+                totalSales,
+                totalOrders,
+                totalUsers,
+                totalCategories
+            }
+        });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
