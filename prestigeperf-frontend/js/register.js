@@ -1,6 +1,17 @@
 $(document).ready(function () {
     const url = 'http://localhost:3000/';
 
+    // ─── Remove custom errors when user types ────────────────────
+    $('#username').on('input', function () {
+        $('#username-error').remove();
+        $(this).removeClass('is-invalid');
+    });
+
+    $('#email').on('input', function () {
+        $('#email-error').remove();
+        $(this).removeClass('is-invalid');
+    });
+
     // ─── Real-time AJAX Validation ────────────────────────────
     // Check username availability
     $('#username').on('blur', function () {
@@ -47,9 +58,6 @@ $(document).ready(function () {
 
     // ─── jQuery Validate ───────────────────────────────────────
     $('#registerForm').validate({
-        onkeyup: true,
-        onfocusout: true,
-        onclick: false,
         rules: {
             username: {
                 required: true,
@@ -65,9 +73,8 @@ $(document).ready(function () {
             },
             contact_number: { 
                 required: true, 
-                digits: true, 
-                minlength: 10, 
-                maxlength: 13 
+                minlength: 10,
+                maxlength: 13
             },
             address: { 
                 required: true, 
@@ -78,8 +85,7 @@ $(document).ready(function () {
                 minlength: 6
             },
             confirm_password: {
-                required: true,
-                equalTo: '#password'
+                required: true
             }
         },
         messages: {
@@ -97,9 +103,8 @@ $(document).ready(function () {
             },
             contact_number: { 
                 required: 'Contact number is required.', 
-                digits: 'Must be numbers only.', 
-                minlength: 'At least 10 digits.', 
-                maxlength: 'Maximum 13 digits.' 
+                minlength: 'At least 10 digits.',
+                maxlength: 'Maximum 13 digits.'
             },
             address: { 
                 required: 'Address is required.', 
@@ -110,13 +115,22 @@ $(document).ready(function () {
                 minlength: 'At least 6 characters.'
             },
             confirm_password: {
-                required: 'Please confirm your password.',
-                equalTo: 'Passwords do not match.'
+                required: 'Please confirm your password.'
             }
         },
         errorElement: 'label',
         errorClass: 'error',
+        highlight: function (element) {
+            // Remove custom error labels when jQuery Validate highlights an error
+            $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element) {
+            // Remove error styling when field becomes valid
+            $(element).removeClass('is-invalid');
+        },
         errorPlacement: function (error, element) {
+            // Remove any existing custom error labels first
+            element.closest('.pp-auth-input-wrap').find('.error').remove();
             error.insertAfter(element.closest('.pp-auth-input-wrap').find('.form-control'));
         },
         submitHandler: function () {

@@ -255,7 +255,6 @@ $(document).ready(function () {
         }
     });
 
-    // Hide dropdown when clicking outside
     $(document).on('click', function (e) {
         if (!$(e.target).closest('#search-input, #autocomplete-list').length) {
             $('#autocomplete-list').hide();
