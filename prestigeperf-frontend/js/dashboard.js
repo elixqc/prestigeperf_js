@@ -82,8 +82,9 @@ $(document).ready(function () {
 
     // ─── Chart.js Global Defaults ─────────────────────────────────────────────
     Chart.defaults.font.family = "'Jost', 'Segoe UI', sans-serif";
-    Chart.defaults.font.size = 11;
-    Chart.defaults.color = COLORS.textMuted;
+    Chart.defaults.font.size = 13;
+    Chart.defaults.font.weight = '500';
+    Chart.defaults.color = COLORS.textMid;
 
     let barChartInstance = null;
     let pieChartInstance = null;
@@ -94,10 +95,13 @@ $(document).ready(function () {
         // ─── Stats ────────────────────────────────────────────────────────────
         $.ajax({
             method: 'GET',
-            url: `${url}api/v1/dashboard/stats`,
+            url: `${url}api/v1/dashboard/stats?period=${period}`,
             headers: { Authorization: `Bearer ${token}` },
             success: function (data) {
-                $('#total-products').text(data.stats.totalProducts);
+                $('#total-sales').text('₱' + Number(data.stats.totalSales).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }));
                 $('#total-orders').text(data.stats.totalOrders);
                 $('#total-users').text(data.stats.totalUsers);
                 $('#total-categories').text(data.stats.totalCategories);

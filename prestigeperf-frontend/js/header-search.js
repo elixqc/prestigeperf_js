@@ -30,7 +30,7 @@ $(function () {
         clearTimeout(searchTimeout);
         $('#header-autocomplete-list').hide().empty();
 
-        if (query.length < 2) return;
+        if (query.length < 1) return;
 
         searchTimeout = setTimeout(function () {
             $.ajax({
@@ -41,16 +41,25 @@ $(function () {
 
                     if (data.products.length === 0) {
                         $('#header-autocomplete-list')
-                            .append('<li class="list-group-item text-muted">No results found</li>')
+                            .append('<li class="list-group-item pp-nav-ac-empty">No results found</li>')
                             .show();
                         return;
                     }
 
                     $.each(data.products, function (i, p) {
+                        const imgSrc = (p.ProductImages && p.ProductImages.length > 0)
+                            ? `${url}images/${p.ProductImages[0].image_path}`
+                            : 'https://via.placeholder.com/60x60?text=No+Image';
+                        const categoryName = p.Category?.category_name ?? '';
+
                         const item = $(`
-                            <li class="list-group-item list-group-item-action" style="cursor:pointer;">
-                                <span>${p.product_name}</span>
-                                <small>₱${parseFloat(p.selling_price).toFixed(2)}</small>
+                            <li class="list-group-item list-group-item-action pp-nav-ac-item">
+                                <img src="${imgSrc}" alt="${p.product_name}" class="pp-nav-ac-thumb">
+                                <div class="pp-nav-ac-info">
+                                    <div class="pp-nav-ac-name">${p.product_name}</div>
+                                    ${categoryName ? `<div class="pp-nav-ac-category">${categoryName}</div>` : ''}
+                                </div>
+                                <span class="pp-nav-ac-price">₱${parseFloat(p.selling_price).toFixed(2)}</span>
                             </li>
                         `);
 

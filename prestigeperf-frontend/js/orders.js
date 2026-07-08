@@ -176,6 +176,20 @@ $(document).ready(function () {
         $('#orderDetailModal').modal('show');
     }
 
+    // Open the status-update modal directly from the detail modal
+    $(document).on('click', '#btn-open-update-from-detail', function () {
+        const id = $('#detail-order-id').text().replace('#', '');
+        const order = ordersById[id];
+        if (!order) return;
+
+        $(this).blur(); // release focus before hiding the modal
+
+        $('#orderDetailModal').modal('hide');
+        $('#update-order-id').val(id);
+        $('#order_status').val(order.order_status);
+        $('#statusModal').modal('show');
+    });
+
     // View button opens detail modal
     $(document).on('click', '.btn-view-order', function (e) {
         e.stopPropagation();

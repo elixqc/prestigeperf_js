@@ -202,7 +202,7 @@ $(document).ready(function () {
         }
 
         // Need at least 2 chars for autocomplete
-        if (query.length < 2) return;
+        if (query.length < 1) return;
 
         // Debounce — wait 300ms after user stops typing
         searchTimeout = setTimeout(function () {
@@ -220,13 +220,22 @@ $(document).ready(function () {
                     }
 
                     $.each(data.products, function (i, p) {
+                        const imgSrc = (p.ProductImages && p.ProductImages.length > 0)
+                            ? `${url}images/${p.ProductImages[0].image_path}`
+                            : 'https://via.placeholder.com/60x60?text=No+Image';
+                        const categoryName = p.Category?.category_name ?? '';
+
                         const item = $(`
-                            <li class="list-group-item list-group-item-action"
+                            <li class="list-group-item list-group-item-action pp-autocomplete-item"
                                 style="cursor:pointer;">
-                                ${p.product_name}
-                                <small class="text-muted float-right">
+                                <img src="${imgSrc}" alt="${p.product_name}" class="pp-autocomplete-thumb">
+                                <div class="pp-autocomplete-info">
+                                    <div class="pp-autocomplete-name">${p.product_name}</div>
+                                    ${categoryName ? `<div class="pp-autocomplete-category">${categoryName}</div>` : ''}
+                                </div>
+                                <span class="pp-autocomplete-price">
                                     ₱${parseFloat(p.selling_price).toFixed(2)}
-                                </small>
+                                </span>
                             </li>
                         `);
 

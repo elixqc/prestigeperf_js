@@ -598,8 +598,14 @@
 }
 .pp-admin-modal .close {
   color: #fff;
-  opacity: 0.7;
+  opacity: 0.9;
   text-shadow: none;
+}
+.pp-admin-modal .close:hover,
+.pp-admin-modal .close:focus {
+  color: var(--gold);
+  opacity: 1;
+  outline: none;
 }
 .pp-admin-modal .close:hover { opacity: 1; }
 .pp-admin-modal .modal-body { padding: 24px; }
